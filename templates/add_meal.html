@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head class="html5">
+        <meta charset="utf-8">
+        <title>Neues Gericht eintragen</title>
+        <link rel="stylesheet" type="text/css"  href="/static/style.css">
+        </head>
+    <body>
+        <form method="post">
+        <p>Name: <input type="text" name="name" value="{{ name }}"></p>
+        <p>Kategorie:
+        <select name="selection">
+        {% for category in content %}  
+        <option name="category" value="{{category}}" >{{category}}</option>
+        {% endfor %}  
+        </select></p>
+
+        <p>Zutaten: <textarea name="ingredients">{{ingredients}}</textarea></p>
+        <p>Referenz: <input type="text" name="reference" value="{{reference}}"></p>
+        <p><input type="submit" value="Abschicken"> <input type="reset" value="Abbrechen"></p>
+        </form>
+        {% if error is defined %}
+            <div id="error">{{error}}</div>
+        {% endif %}
+    </body>
+</html>

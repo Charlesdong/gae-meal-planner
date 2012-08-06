@@ -1,0 +1,8 @@
+body {
+    background-color: yellow;
+}    
+#error {
+    font-size: 2em;
+    font-family: sans-serif;
+    color: red;
+}
