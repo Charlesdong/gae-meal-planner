@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head class="html5">
+        <meta charset="utf-8">
+        <title>Gericht löschen</title>
+        <link rel="stylesheet" type="text/css"  href="/static/style.css">
+        </head>
+    <body>
+        <form method="post">
+        <p>Name: <input type="text" name="name" value="{{ meal.name }}"></p>
+        <p>Kategorie:
+        <select name="selection">
+        <option name="category" value="{{meal.category}}" >{{meal.category}}</option>
+        </select></p>
+
+        <p>Zutaten: <textarea name="ingredients">{{meal.ingredients}}</textarea></p>
+        <p>Referenz: <input type="text" name="reference" value="{{meal.reference}}"></p>
+        <p><input type="submit" value="Löschen"> <input type="reset" value="Abbrechen"></p>
+        </form>
+        {% if error is defined %}
+            <div id="error">{{error}}</div>
+        {% endif %}
+    </body>
+</html>

@@ -1,19 +1,19 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
+
+''' 
+Meal-Planner 
+
+Tracks your plans for what to eat on a weekly base. 
+
+V.0.1 by Marcus Kemper
+
+kemper.mt@googlemail.com 
+'''
+
+
+
+
 import webapp2
 import jinja2
 import os
@@ -83,11 +83,32 @@ class MealAdd(Handler):
             content = meal_categories
             self.render_addmeal(content, error)
        
+class MealDel(Handler):
+    
+    def render_meal(self, _id=""):
+        _id = int(_id)
+        meal = Meal.get_by_id(_id)
 
+        if meal:
+            self.render("del_meal.html", meal = meal)
+        else:
+            error = "Dieses Gericht ist nicht (mehr) existent!"
+            self.render("del_meal.html", meal = None, error=error) 
+    
+    def get(self, _id):
+        self.render_meal(_id = _id)       
+    
+    def post(self, _id=""):
+        _id = int(_id)
+        m = Meal.get_by_id(_id)
+        m.delete()
+        self.redirect("/")
+        
 class MainHandler(Handler):
     def get(self):
         self.render("index.html")
 
 app = webapp2.WSGIApplication([('/', MainHandler),
-                            ('/add_meal', MealAdd)],
+                            ('/add_meal', MealAdd),
+                            ('/del_meal/(\d+)', MealDel)],
                               debug=True)
