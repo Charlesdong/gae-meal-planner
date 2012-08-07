@@ -18,15 +18,26 @@ import webapp2
 import jinja2
 import os
 import datetime
+import time
 
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
 
+# Helper functions and things like that...
 
+actual_day = datetime.date.today()
 
-meal_categories = ["Lust und Laune", "Nudeln", "Fleisch","Reis, Bulgur, Couscous","Suppe","Suess"]
+meal_categories = ("Lust und Laune", "Nudeln", "Fleisch","Reis, Bulgur, Couscous","Suppe",u"Süß")
+
+day_names = {0:"Montag",1:"Dienstag",2:"Mittwoch",3:"Donnerstag",4:"Freitag",5:"Samstag",6:"Sonntag"}
+
+calendar_week = time.strftime("%W",time.struct_time(time.localtime()))
+
+def name_actual_day():
+    name = day_names[actual_day.weekday()]
+    return name
 
 
 
@@ -103,10 +114,19 @@ class MealDel(Handler):
         m = Meal.get_by_id(_id)
         m.delete()
         self.redirect("/")
-        
+
+# Day Handler Classes
+
+class DayShow(Handler):
+
+    def get(self):
+        self.render("show_day.html")
+
+
 class MainHandler(Handler):
     def get(self):
-        self.render("index.html")
+        kw = calendar_week
+        self.render("index.html",actual_day=kw)
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
