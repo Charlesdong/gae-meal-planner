@@ -12,6 +12,8 @@ kemper.mt@googlemail.com
 '''
 
 
+ 
+# ... ("template.html", variable_im_template = variable aus function)
 
 
 import webapp2
@@ -34,6 +36,21 @@ meal_categories = ("Lust und Laune", "Nudeln", "Fleisch","Reis, Bulgur, Couscous
 day_names = {0:"Montag",1:"Dienstag",2:"Mittwoch",3:"Donnerstag",4:"Freitag",5:"Samstag",6:"Sonntag"}
 
 calendar_week = time.strftime("%W",time.struct_time(time.localtime()))
+
+actual_year = time.strftime("%Y",time.struckt_time(time.localtime()))
+
+
+def week(year, cw):
+    first_monday = 4 - datetime.date(year,1,4).weekday()
+    monday_of_kw = first_monday + (kw - 1)*7
+    list = range(monday_of_kw, monday_of_kw + 7)
+    return list
+
+def getDate(year, day_of_year):
+    d = datetime.datetime(year,1,1)+datetime.timedelta(day_of_year - 1)
+    name = name_actual_day(d.weekday())
+    date = (name, d.day, d.month, d.year)
+    return date
 
 def name_actual_day():
     name = day_names[actual_day.weekday()]
@@ -117,10 +134,10 @@ class MealDel(Handler):
 
 # Day Handler Classes
 
-class DayShow(Handler):
+class ShowPlanner(Handler):
 
     def get(self):
-        self.render("show_day.html")
+        self.render("show_planner.html")
 
 
 class MainHandler(Handler):
@@ -130,5 +147,6 @@ class MainHandler(Handler):
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
-                            ('/del_meal/(\d+)', MealDel)],
+                            ('/del_meal/(\d+)', MealDel),
+                            ('/show', ShowPlanner)],
                               debug=True)
