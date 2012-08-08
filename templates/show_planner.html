@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head class="html5">
+        <meta charset="utf-8">
+        <title>Meal Planner</title>
+        <link rel="stylesheet" type="text/css"  href="/static/style.css">
+        </head>
+    <body>
+        <header><h1>Essensplan</h1></header>
+        <nav> <-- zurück vorwärts --> <nav>
+        <article>
+            <table border="1" bordercolor="#000000" width="100%" cellpadding="3" cellspacing="3">
+                <tr>
+                {% for day in days %}
+                        <td>{{day[0]}}, der {{day[1]}}.{{day[2]}}.{{day[3]}}</td>
+                {% endfor %}
+                </tr>
+            </table>
+   </body>
+</html>

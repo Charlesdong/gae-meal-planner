@@ -35,28 +35,32 @@ meal_categories = ("Lust und Laune", "Nudeln", "Fleisch","Reis, Bulgur, Couscous
 
 day_names = {0:"Montag",1:"Dienstag",2:"Mittwoch",3:"Donnerstag",4:"Freitag",5:"Samstag",6:"Sonntag"}
 
-calendar_week = time.strftime("%W",time.struct_time(time.localtime()))
+calendar_week = int(time.strftime("%W",time.struct_time(time.localtime())))
 
-actual_year = time.strftime("%Y",time.struckt_time(time.localtime()))
+actual_year = int(time.strftime("%Y",time.struct_time(time.localtime())))
 
 
-def week(year, cw):
+def get_week(year, cw):
     first_monday = 4 - datetime.date(year,1,4).weekday()
-    monday_of_kw = first_monday + (kw - 1)*7
+    monday_of_kw = first_monday + (cw - 1)*7
     list = range(monday_of_kw, monday_of_kw + 7)
     return list
 
-def getDate(year, day_of_year):
+def get_date(year, day_of_year):
     d = datetime.datetime(year,1,1)+datetime.timedelta(day_of_year - 1)
-    name = name_actual_day(d.weekday())
+    name = day_names[d.weekday()]
     date = (name, d.day, d.month, d.year)
     return date
 
-def name_actual_day():
-    name = day_names[actual_day.weekday()]
-    return name
+def construct_table(year, cw):
+    w = get_week(year, cw)
+    table = []    
+    for data in w:
+        data = get_date(year, data)
+        # hier Day Objekt generieren
 
-
+        table.append(data)
+    return table    
 
 # Handler class for the template engine
 
@@ -137,7 +141,8 @@ class MealDel(Handler):
 class ShowPlanner(Handler):
 
     def get(self):
-        self.render("show_planner.html")
+        t= construct_table(actual_year, calendar_week)                
+        self.render("show_planner.html", days = t)
 
 
 class MainHandler(Handler):
