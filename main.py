@@ -1,4 +1,4 @@
-#!/usr/bin/python
+
 #-*- coding: utf-8 -*-
 
 ''' 
@@ -140,18 +140,42 @@ class MealDel(Handler):
 
 class ShowPlanner(Handler):
 
-    def get(self):
-        t= construct_table(actual_year, calendar_week)                
-        self.render("show_planner.html", days = t)
+    #def get(self):
+    #   t= construct_table(actual_year, calendar_week)                
+    #  self.render("show_planner.html", days = t)
+
+    def get(self,year,cw):
+        year = int(year)
+        cw = int(cw)
+        # setting up navigation
+        if cw == 1:
+            back_cw = 52  
+            back_year = (year - 1)
+        else:
+            back_cw = cw - 1
+            back_year = year
+        if cw == 52:
+            forward_cw = 1 
+            forward_year = (year + 1)
+        else:
+            forward_cw = cw + 1
+            forward_year = year
+
+        nav = (year, cw, back_year, back_cw, forward_year, forward_cw)
+        print nav
+        t = construct_table(year, cw)
+        self.render("show_planner.html", days = t, nav = nav)
 
 
 class MainHandler(Handler):
     def get(self):
-        kw = calendar_week
-        self.render("index.html",actual_day=kw)
+        cw = calendar_week
+        ay = actual_year
+        self.render("index.html",year=ay, calweek=cw)
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
                             ('/del_meal/(\d+)', MealDel),
-                            ('/show', ShowPlanner)],
+                            ('/show', ShowPlanner),
+                            ('/show/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShowPlanner)],
                               debug=True)
