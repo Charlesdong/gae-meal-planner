@@ -7,7 +7,7 @@
         </head>
     <body>
         {% for meal in meal_list %}
-            <div><a href="/del_meal/{{meal.key().id()}}">[x]</a>{{meal.name}} {{meal.category}} <a href="/commit_entry/{{day}}/{{meal.key().id()}}">Für den Tag auswählen</a></div>
+            <div><a href="/del_meal/{{meal.key().name()}}">[x]</a>{{meal.name}} {{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}">Für den Tag auswählen</a></div>
         {% endfor %}
 
 

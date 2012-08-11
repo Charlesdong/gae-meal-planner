@@ -21,7 +21,7 @@ import jinja2
 import os
 import datetime
 import time
-
+import random
 
 import model
 
@@ -65,8 +65,7 @@ def construct_table(year, cw):
             d.put()
             table.append(d)
         else:
-            print "Eintrag schon vorhanden!"
-            table.append(result)
+            table.append(result.get())
     return table    
 
 # Handler class for the template engine
@@ -93,13 +92,14 @@ class MealAdd(Handler):
         self.render("add_meal.html",content = model.meal_categories)
 
     def post(self):
+        key_name = self.request.get("name").replace(" ", "")+str(random.randint(0,9999))
         name = self.request.get("name")
         category = self.request.get("selection")
         ingredients = self.request.get("ingredients")
         reference = self.request.get("reference")
         
         if name:
-            m = model.Meal(name = name, category = category, ingredients = ingredients, reference = reference)
+            m = model.Meal(key_name = key_name, name = name, category = category, ingredients = ingredients, reference = reference)
             m.put()
             self.redirect("/show_meal_list")
         else:
@@ -109,9 +109,8 @@ class MealAdd(Handler):
        
 class MealDel(Handler):
     
-    def render_meal(self, _id=""):
-        _id = int(_id)
-        meal = model.Meal.get_by_id(_id)
+    def render_meal(self, key_name=""):
+        meal = model.Meal.get_by_key_name(key_name)
 
         if meal:
             self.render("del_meal.html", meal = meal)
@@ -119,20 +118,19 @@ class MealDel(Handler):
             error = "Dieses Gericht ist nicht (mehr) existent!"
             self.render("del_meal.html", meal = None, error=error) 
     
-    def get(self, _id):
-        self.render_meal(_id = _id)       
+    def get(self, key_name):
+        self.render_meal(key_name = key_name)       
     
-    def post(self, _id=""):
-        _id = int(_id)
-        m = model.Meal.get_by_id(_id)
+    def post(self, key_name=""):
+        m = model.Meal.get_by_key_name(key_name)
         m.delete()
         self.redirect("/show_meal_list")
 
 class MealShowList(Handler):
 
-    def get(self, day_object=model.Day):
+    def get(self, day_object_date=actual_day):
         meal_list = model.db.GqlQuery("SELECT * FROM Meal ORDER BY category DESC")
-        self.render("show_meal_list.html", meal_list = meal_list, day = day_object)
+        self.render("show_meal_list.html", meal_list = meal_list, day_date = day_object_date)
 
 # Day Handler Classes
 
@@ -157,13 +155,24 @@ class ShowPlanner(Handler):
             forward_year = year
 
         nav = (year, cw, back_year, back_cw, forward_year, forward_cw)
-        t = construct_table(year, cw)
-        self.render("show_planner.html", days = t, nav = nav)
+        tab = construct_table(year, cw)
+        
+        self.render("show_planner.html", days = tab, nav = nav)
 
 class EntryCommit(Handler):
     
-    def get(self, day_object_date, meal_id):
-        self.redirect("/")
+    def get(self, day_object_date, meal_key_name):
+
+        day_object_date = day_object_date.replace('-',' ').split()
+        day_object_date = datetime.date(int(day_object_date[0]),int(day_object_date[1]),int(day_object_date[2])) 
+        
+        d = model.Day.all().filter('date =', day_object_date)
+        m = model.Meal.get_by_key_name(meal_key_name)
+        
+        meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference, day = d.get())
+        meal.put()
+        # hier Parameter für korrekten Rücksprung errechnen (Jahr//KW)
+        self.redirect("/show")
 
 
 class MainHandler(Handler):
@@ -172,10 +181,10 @@ class MainHandler(Handler):
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
-                            ('/del_meal/(\d+)', MealDel),
+                            ('/del_meal/(\w+\d{4})', MealDel),
                             ('/show_meal_list', MealShowList),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})', MealShowList),
                             ('/show', ShowPlanner),
                             ('/show/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShowPlanner),
-                            ('/commit_entry/(2\d{3}-\d{2}-\d{2})/(\d+)', EntryCommit)],
+                            ('/commit_entry/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})', EntryCommit)],
                               debug=True)
