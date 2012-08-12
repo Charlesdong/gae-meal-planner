@@ -13,8 +13,8 @@
                 <tr>
                 {% for day in days %}
                         <td>{{day.name}}, {{day.date}}
-                        {% if day.meal %}
-                            Hier das Meal Objekt
+                        {% if day.meal_name %}
+                           <p>{{ day.meal_name }}<a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x]</a></p> 
                         {% else %}
                            <a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></td>
                         {% endif %}

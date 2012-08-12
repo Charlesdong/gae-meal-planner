@@ -92,7 +92,10 @@ class MealAdd(Handler):
         self.render("add_meal.html",content = model.meal_categories, day_date=date)
 
     def post(self, day_date=""):
-        key_name = self.request.get("name").replace(" ", "")+str(random.randint(1000,9999))
+        key_name=""
+        for i in range(1,10):
+           key_name = key_name + random.choice(["a","b","c","d","e","f","g","h","i","j","k","l","n","m","o","p","q","r","s","t","u","v","w","x","y","z"]) 
+        key_name = key_name+str(random.randint(1000,9999))
 
         name = self.request.get("name")
         category = self.request.get("selection")
@@ -162,7 +165,13 @@ class ShowPlanner(Handler):
 
         nav = (year, cw, back_year, back_cw, forward_year, forward_cw)
         tab = construct_table(year, cw)
-        
+        for day in tab:
+            m = model.Meal.all().filter('day =', day.key())
+            if m.get():
+               day.meal_name = m.get().name
+               day.meal_key_name = m.get().key().name()
+               day.put()
+
         self.render("show_planner.html", days = tab, nav = nav)
 
 class EntryCommit(Handler):
@@ -188,6 +197,30 @@ class EntryCommit(Handler):
 
         self.redirect("/show/"+str(day_object_date[0])+"/"+str(day_object_date[1]))
 
+class EntryRemove(Handler):
+
+    def get(self, day_object_date, meal_key_name):
+        
+        day_object_date = day_object_date.replace('-',' ').split()
+        day_object_date = datetime.date(int(day_object_date[0]),int(day_object_date[1]),int(day_object_date[2])) 
+        
+        d = model.Day.all().filter('date =', day_object_date)
+        m = model.Meal.get_by_key_name(meal_key_name)
+        meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference)
+        
+        meal.day = m.day
+        meal.day.remove(d.get().key())
+        
+        #d.get().meal_name = None
+        #d.get().meal_key_name = None
+        #d.get().put()
+        meal.put()
+        # hier Parameter für korrekten Rücksprung errechnen (Jahr//KW)
+
+        day_object_date = day_object_date.isocalendar()
+
+        self.redirect("/show/"+str(day_object_date[0])+"/"+str(day_object_date[1]))
+
 
 class MainHandler(Handler):
     def get(self):
@@ -201,5 +234,6 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})', MealShowList),
                             ('/show', ShowPlanner),
                             ('/show/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShowPlanner),
-                            ('/commit_entry/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})', EntryCommit)],
+                            ('/commit_entry/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})', EntryCommit),
+                            ('/remove_entry/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})', EntryRemove)],
                               debug=True)

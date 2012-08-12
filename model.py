@@ -13,7 +13,9 @@ meal_categories = ("Lust und Laune", "Nudeln", "Fleisch","Reis, Bulgur, Couscous
 class Day(db.Model):
     name = db.StringProperty(required = True, choices=set(["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"]))
     date = db.DateProperty()
-
+    meal_name = db.StringProperty()
+    meal_key_name = db.StringProperty()
+    
 class Meal(db.Model):
     name = db.StringProperty(required = True)
     category = db.CategoryProperty(required = True, choices=set(meal_categories))
