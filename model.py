@@ -19,7 +19,7 @@ class Meal(db.Model):
     category = db.CategoryProperty(required = True, choices=set(meal_categories))
     ingredients = db.StringProperty(multiline = True)
     reference = db.StringProperty()
-    day = db.ReferenceProperty(Day)
+    day = db.ListProperty(db.Key)
 
 
 

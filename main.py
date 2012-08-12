@@ -88,20 +88,24 @@ class MealAdd(Handler):
     def render_addmeal(self,content="", error=""):
         self.render("add_meal.html", content = model.meal_categories, error = error)
 
-    def get(self):
-        self.render("add_meal.html",content = model.meal_categories)
+    def get(self, date=""):
+        self.render("add_meal.html",content = model.meal_categories, day_date=date)
 
-    def post(self):
-        key_name = self.request.get("name").replace(" ", "")+str(random.randint(0,9999))
+    def post(self, day_date=""):
+        key_name = self.request.get("name").replace(" ", "")+str(random.randint(1000,9999))
+
         name = self.request.get("name")
         category = self.request.get("selection")
         ingredients = self.request.get("ingredients")
         reference = self.request.get("reference")
-        
+        day_date = self.request.get("day_date")
+
         if name:
             m = model.Meal(key_name = key_name, name = name, category = category, ingredients = ingredients, reference = reference)
             m.put()
-            self.redirect("/show_meal_list")
+            # go to where you came from
+
+            self.redirect("/show_meal_list/"+day_date)
         else:
             error = "Bitte Namen angeben!"
             content = model.meal_categories
@@ -109,22 +113,24 @@ class MealAdd(Handler):
        
 class MealDel(Handler):
     
-    def render_meal(self, key_name=""):
+    def render_meal(self, key_name="", day_date=""):
         meal = model.Meal.get_by_key_name(key_name)
 
         if meal:
-            self.render("del_meal.html", meal = meal)
+            self.render("del_meal.html", meal = meal, day_date=day_date)
         else:
             error = "Dieses Gericht ist nicht (mehr) existent!"
-            self.render("del_meal.html", meal = None, error=error) 
+            self.render("del_meal.html", meal = None, error=error, day_date = day_date) 
     
-    def get(self, key_name):
-        self.render_meal(key_name = key_name)       
+    def get(self, key_name, day_date=""):
+        self.render_meal(key_name = key_name, day_date=day_date)       
     
-    def post(self, key_name=""):
+    def post(self, key_name="", day_date=""):
         m = model.Meal.get_by_key_name(key_name)
         m.delete()
-        self.redirect("/show_meal_list")
+        # go to where you came from
+        day_date = self.request.get("day_date")
+        self.redirect("/show_meal_list/"+day_date)
 
 class MealShowList(Handler):
 
@@ -169,10 +175,18 @@ class EntryCommit(Handler):
         d = model.Day.all().filter('date =', day_object_date)
         m = model.Meal.get_by_key_name(meal_key_name)
         
-        meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference, day = d.get())
+        meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference)
+        # copy values from queried Object to new Object
+        meal.day = m.day
+        # Value not already in ListProperty then append it
+        if d.get().key() not in m.day:
+            meal.day.append(d.get().key())
         meal.put()
         # hier Parameter für korrekten Rücksprung errechnen (Jahr//KW)
-        self.redirect("/show")
+
+        day_object_date = day_object_date.isocalendar()
+
+        self.redirect("/show/"+str(day_object_date[0])+"/"+str(day_object_date[1]))
 
 
 class MainHandler(Handler):
@@ -181,7 +195,8 @@ class MainHandler(Handler):
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
-                            ('/del_meal/(\w+\d{4})', MealDel),
+                            ('/add_meal/(2\d{3}-\d{2}-\d{2})', MealAdd),
+                            ('/del_meal/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list', MealShowList),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})', MealShowList),
                             ('/show', ShowPlanner),
