@@ -5,7 +5,7 @@
 
 from google.appengine.ext import db
 
-meal_categories = ("Lust und Laune", "Nudeln", "Fleisch","Reis, Bulgur, Couscous","Suppe",u"Süß")
+meal_categories = ("Lust und Laune", "Nudeln", "Kartoffeln", "Fleisch","Reis, Bulgur, Couscous","Suppe",u"Süß")
 
 
 # Database Model for the meal-planner

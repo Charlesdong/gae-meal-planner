@@ -1,26 +1,97 @@
 <!DOCTYPE html>
 <html lang="de">
-    <head class="html5">
-        <meta charset="utf-8">
-        <title>Gericht löschen</title>
-        <link rel="stylesheet" type="text/css"  href="/static/style.css">
-        </head>
-    <body>
-        <form method="post">
+<head>
+	<meta charset="utf-8"/>
+	<title>Essens-Plan</title>
+
+	<!-- Mobile viewport optimisation -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- (en) Add your meta data here -->
+	<!-- (de) Fuegen Sie hier ihre Meta-Daten ein -->
+
+	<link href="/static/css/mtk.css" rel="stylesheet" type="text/css"/>
+	<!--[if lte IE 7]>
+	<link href="../yaml/core/iehacks.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	
+	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
+	
+	
+</head>
+<body>
+
+
+
+
+
+<div class="ym-wrapper">
+		<div class="ym-wbox">
+<header>
+		<h1>Essens-Plan</h1>
+</header>
+
+<nav id="nav">
+	<div class="ym-wrapper">
+		<div class="ym-hlist">
+			<ul>
+				<!-- <li class="active"><strong>Active</strong></li> -->
+				<li><a href="/">Home</a></li>
+				<li><a href="#">Link</a></li>
+			</ul>
+            <!--
+			<form class="ym-searchform">
+				<input class="ym-searchfield" type="search" placeholder="Search..." />
+				<input class="ym-searchbutton" type="submit" value="Search" />
+			</form>
+            -->
+		</div>
+	</div>
+</nav>
+
+<div id="main">
+	<div class="ym-wrapper">
+		<div class="ym-wbox">
+		<h2>Gericht löschen?</h2>	
+			<section class="ym-grid">
+				<div class="ym-g75 ym-gl">
+				    <div class="ym-box">	
+                    </div>
+				<form method="post">
         <input type="hidden" value="{{meal.key_name}}">
         <input type="hidden" name="day_date" value="{{day_date}}">
-        <p>Name: <input type="text" name="name" value="{{ meal.name }}"></p>
-        <p>Kategorie:
-        <select name="selection">
-        <option name="category" value="{{meal.category}}" >{{meal.category}}</option>
-        </select></p>
-
-        <p>Zutaten: <textarea name="ingredients">{{meal.ingredients}}</textarea></p>
-        <p>Referenz: <input type="text" name="reference" value="{{meal.reference}}"></p>
-        <p><input type="submit" value="Löschen"> <input type="reset" value="Abbrechen"></p>
+        <p>Name: {{ meal.name }}</p>
+        <p><input type="submit" value="Löschen"> oder lieber zurück zur <a href="/show_meal_list/{{day_date}}">Auswahl</a>?</p>
         </form>
         {% if error is defined %}
             <div id="error">{{error}}</div>
         {% endif %}
-    </body>
+
+                </div>
+				<div class="ym-g25 ym-gr">
+                    <div class="ym-box">
+                    </div>
+                    zusatz infos rechts
+				</div> 
+            </section> 
+			
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="ym-wrapper">
+		<div class="ym-wbox">
+			<p>© <a href="http://www.marcus-kemper.de">Marcus Kemper</a> 2012 &ndash; Layout based on <a href="http://www.yaml.de">YAML</a></p>
+		</div>
+	</div>
+</footer>
+		</div>
+</div>
+<!-- full skip link functionality in webkit browsers -->
+<script src="../yaml/core/js/yaml-focusfix.js"></script>
+</body>
 </html>

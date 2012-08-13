@@ -56,28 +56,12 @@
 <div id="main">
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-		<h2>Gericht hinzufügen</h2>	
+		<h2>Gericht löschen?</h2>	
 			<section class="ym-grid">
 				<div class="ym-g75 ym-gl">
 				    <div class="ym-box">	
                     </div>
-				<form method="post">
-        <input type="hidden" name="day_date" value="{{day_date}}">
-        <p>Name: <input type="text" name="name" value="{{ name }}"></p>
-        <p>Kategorie:
-        <select name="selection">
-        {% for category in content %}  
-        <option name="category" value="{{category}}" >{{category}}</option>
-        {% endfor %}  
-        </select></p>
-
-        <p>Zutaten: <textarea name="ingredients">{{ingredients}}</textarea></p>
-        <p>Referenz: <input type="text" name="reference" value="{{reference}}"></p>
-        <p><input type="submit" value="Abschicken"> <input type="reset" value="Abbrechen"></p>
-        </form>
-        {% if error is defined %}
-            <div id="error">{{error}}</div>
-        {% endif %}
+                    Hier die Liste der Gerichte erzeugen!
                 </div>
 				<div class="ym-g25 ym-gr">
                     <div class="ym-box">
