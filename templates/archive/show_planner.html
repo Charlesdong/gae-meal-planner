@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head class="html5">
+        <meta charset="utf-8">
+        <title>Meal Planner</title>
+        <link rel="stylesheet" type="text/css"  href="/static/style.css">
+        </head>
+    <body>
+        <header><h1>Essensplan KW:{{nav[1]}}</h1></header>
+        <nav> <-- <a href="/show/{{nav[2]}}/{{nav[3]}}">zurück</a> <a href="/show/{{nav[4]}}/{{nav[5]}}">vorwärts</a> --> <nav>
+        <article>
+            <table border="1" bordercolor="#000000" width="100%" cellpadding="3" cellspacing="3">
+                <tr>
+                {% for day in days %}
+                        <td>{{day.name}}, {{day.date}}
+                        {% if day.meal_name %}
+                           <p>{{ day.meal_name }}<a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x]</a></p> 
+                        {% else %}
+                           <a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></td>
+                        {% endif %}
+                {% endfor %}
+                </tr>
+            </table>
+   </body>
+</html>

@@ -56,26 +56,31 @@
 <div id="main">
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-		<h2>KW:{{nav[1]}}</h2>	
+		<h2>KW: XX</h2>	
 			<section class="ym-grid">
+				<div class="ym-g75 ym-gl">
 				    <div class="ym-box">	
                     </div>
                         <div class="ym-grid linearize-level-1">
                             {% for day in days %}
-                            <div class="ym-g20 ym-gl">
-                                <div class="box info">
-                                    {{day.name}}, {{day.date}}
-                                    {% if day.meal_name %}
-                                        <p>{{ day.meal_name }}<a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x]</a></p> 
-                                    {% else %}
-                                    <p><a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
+                            <div class="ym-g20 ym-gl">{{day.name}}, {{day.date}}
+                            {% if day.meal_name %}
+                            <p>{{ day.meal_name }}<a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x]</a></p> 
+                            {% else %}
+                            <a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></div>
+                            {% endif %}
                             {% endfor %}
 
                         </div>
+				</div>
+				<div class="ym-g25 ym-gr">
+                    <div class="ym-box">
+                    </div>
+                        <div class="ym-grid linearize-level-2">
+                            <div class="ym-g50 ym-gl">Samstag</div>
+                            <div class="ym-g50 ym-gr">Sonntag</div>
+                        </div>
+				</div> 
             </section> 
 			
 		</div>
@@ -91,6 +96,6 @@
 		</div>
 </div>
 <!-- full skip link functionality in webkit browsers -->
-<script src="/static/yaml/core/js/yaml-focusfix.js"></script>
+<script src="../yaml/core/js/yaml-focusfix.js"></script>
 </body>
 </html>

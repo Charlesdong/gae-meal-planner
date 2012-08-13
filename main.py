@@ -207,14 +207,12 @@ class EntryRemove(Handler):
         d = model.Day.all().filter('date =', day_object_date)
         m = model.Meal.get_by_key_name(meal_key_name)
         meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference)
-        
+        day = model.Day(name = d.get().name, date = d.get().date, meal_name = None, meal_key_name = None) 
         meal.day = m.day
         meal.day.remove(d.get().key())
-        
-        #d.get().meal_name = None
-        #d.get().meal_key_name = None
-        #d.get().put()
+        d.get().delete()
         meal.put()
+        day.put()
         # hier Parameter für korrekten Rücksprung errechnen (Jahr//KW)
 
         day_object_date = day_object_date.isocalendar()
