@@ -130,6 +130,14 @@ class MealDel(Handler):
     
     def post(self, key_name="", day_date=""):
         m = model.Meal.get_by_key_name(key_name)
+        
+        days_to_cleanup = model.db.GqlQuery("SELECT * FROM Day WHERE meal_key_name = :meal_key_name", meal_key_name = m.key().name())
+
+        for day in days_to_cleanup:
+            day.meal_name = ""
+            day.meal_key_name = ""
+            day.put()
+        
         m.delete()
         # go to where you came from
         day_date = self.request.get("day_date")
