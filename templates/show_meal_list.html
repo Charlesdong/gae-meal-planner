@@ -41,6 +41,7 @@
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
 				<li><a href="/">Home</a></li>
+                <li><form method="post"><input type="hidden" name="day_date" value="{{day_date}}"><select name="sort_criteria" onchange="this.form.submit();">{%for category in meal_categories %}<option name = "category" value="{{category}}">{{category}}</option>{% endfor %} <option name = "category" value="all">Alles anzeigen!</option></select></li></form>
 				<li><a href="/add_meal/{{day_date}}">Gericht hinzufügen</a></li>
 			</ul>
             <!--
@@ -62,7 +63,7 @@
 				    <div class="ym-box">	
                     </div>
         {% for meal in meal_list %}
-            <div><a href="/del_meal/{{meal.key().name()}}/{{day_date}}">[x]</a>{{meal.name}} {{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}">Für den Tag auswählen</a></div>
+            <div class="info box"><a href="/del_meal/{{meal.key().name()}}/{{day_date}}">[x] </a><b>{{meal.name}}</b> Kategorie:{{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}"> [Für den {{day_date}} auswählen.]</a></div>
         {% endfor %}
 
                     
@@ -70,14 +71,7 @@
 				<div class="ym-g25 ym-gr">
                     <div class="ym-box">
                     </div>
-                    <form method="post">
-                        <input type="hidden" name="day_date" value="{{day_date}}">
-                        {% for category in meal_categories%}
-                            <p><input type="radio" name="sort_criteria" value="{{category}}">{{category}}</p>
-                        {% endfor%}
-                        <p><input type="radio" name="sort_criteria" value="all">Alles anzeigen</p>
-                        <p><input type="submit" value="Sortieren!"></p>
-                    </form>
+                    <!-- Hier Inhalte für den rechten Teil einfügen -->
 				</div> 
             </section> 
 			

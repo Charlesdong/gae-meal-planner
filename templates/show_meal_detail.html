@@ -40,8 +40,7 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="/show/{{nav[2]}}/{{nav[3]}}">zurück</a></li>
-				<li><a href="/show/{{nav[4]}}/{{nav[5]}}">vorwärts</a></li>
+				<li><a href="{{backlink}}">Home</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -56,26 +55,26 @@
 <div id="main">
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-		<h2>KW:{{nav[1]}}</h2>	
+		<h2>{{meal.name}}</h2>	
 			<section class="ym-grid">
+				<div class="ym-g75 ym-gl">
 				    <div class="ym-box">	
                     </div>
-                        <div class="ym-grid linearize-level-1">
-                            {% for day in days %}
-                            <div class="ym-g20 ym-gl">
-                                <div class="box info">
-                                    {{day.name}}, {{day.date}}
-                                    {% if day.meal_name %}
-                                        <p><a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x] </a>{{day.meal_name}} <a href="/show_meal_detail/{{day.date}}/{{day.meal_key_name}}">[info]</a></p> 
-                                    {% else %}
-                                    <p><a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            {% endfor %}
-
-                        </div>
+                <div class="info box">    
+                <p>Kategorie: {{meal.category}}</p>
+                <p>Zutaten: {{meal.ingredients}}</p>
+                <p>Referenz: {{meal.reference}}</p>
+                </div>
+                
+                <p><a href="{{backlink}}">Zurück</a></p>
+                </div>
+				<div class="ym-g25 ym-gr">
+                    <div class="ym-box">
+                    </div>
+				
+                <!-- Hier kann man Zusatzinfos rechts einblenden! -->
+                
+                </div> 
             </section> 
 			
 		</div>
@@ -91,6 +90,6 @@
 		</div>
 </div>
 <!-- full skip link functionality in webkit browsers -->
-<script src="/static/yaml/core/js/yaml-focusfix.js"></script>
+<script src="../yaml/core/js/yaml-focusfix.js"></script>
 </body>
 </html>

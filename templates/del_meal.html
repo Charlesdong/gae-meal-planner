@@ -61,14 +61,16 @@
 				<div class="ym-g75 ym-gl">
 				    <div class="ym-box">	
                     </div>
+                <div class="box warning">
 				<form method="post">
         <input type="hidden" value="{{meal.key_name}}">
         <input type="hidden" name="day_date" value="{{day_date}}">
         <p>Name: {{ meal.name }}</p>
         <p><input type="submit" value="Löschen"> oder lieber zurück zur <a href="/show_meal_list/{{day_date}}">Auswahl</a>?</p>
         </form>
+        </div>
         {% if error is defined %}
-            <div id="error">{{error}}</div>
+            <div class="box error">{{error}}</div>
         {% endif %}
 
                 </div>

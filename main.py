@@ -85,8 +85,8 @@ class Handler(webapp2.RequestHandler):
 
 class MealAdd(Handler):
     
-    def render_addmeal(self,content="", error=""):
-        self.render("add_meal.html", content = model.meal_categories, error = error)
+    def render_addmeal(self,content="", error="", day_date=""):
+        self.render("add_meal.html", content = model.meal_categories, error = error, day_date = day_date)
 
     def get(self, date=""):
         self.render("add_meal.html",content = model.meal_categories, day_date=date)
@@ -112,7 +112,7 @@ class MealAdd(Handler):
         else:
             error = "Bitte Namen angeben!"
             content = model.meal_categories
-            self.render_addmeal(content, error)
+            self.render_addmeal(content, error, day_date)
        
 class MealDel(Handler):
     
@@ -157,6 +157,27 @@ class MealShowList(Handler):
             meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria = self.request.get("sort_criteria"))
         
         self.render("show_meal_list.html", meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
+
+
+class MealShowDetail(Handler):
+
+    def get(self, day_object_date, meal_key_name):
+        
+        #Constructing the Back Link
+
+        day_object_date = day_object_date.replace('-',' ').split()
+        day_object_date = datetime.date(int(day_object_date[0]),int(day_object_date[1]),int(day_object_date[2])) 
+        day_object_date = day_object_date.isocalendar()
+        backlink = "/show/"+str(day_object_date[0])+"/"+str(day_object_date[1])
+
+        # Getting the right Meal
+        meal = model.Meal.get_by_key_name(meal_key_name)
+        
+        # Jump to the template
+        self.render("show_meal_detail.html", meal = meal, backlink = backlink)
+
+
+
 
 # Day Handler Classes
 
@@ -249,6 +270,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})/(\w+)/(\w+)', MealShowList),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})/(\w+)', MealShowList),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})', MealShowList),
+                            ('/show_meal_detail/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})', MealShowDetail),
                             ('/show', ShowPlanner),
                             ('/show/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShowPlanner),
                             ('/commit_entry/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})', EntryCommit),
