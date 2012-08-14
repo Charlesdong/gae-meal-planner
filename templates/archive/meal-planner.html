@@ -10,7 +10,7 @@
 	<!-- (en) Add your meta data here -->
 	<!-- (de) Fuegen Sie hier ihre Meta-Daten ein -->
 
-	<link href="./css/mtk.css" rel="stylesheet" type="text/css"/>
+	<link href="/static/css/mtk.css" rel="stylesheet" type="text/css"/>
 	<!--[if lte IE 7]>
 	<link href="../yaml/core/iehacks.css" rel="stylesheet" type="text/css" />
 	<![endif]-->
@@ -19,7 +19,7 @@
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	
-	<link rel="stylesheet" href="../yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
+	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
 	
 	
 </head>
@@ -40,8 +40,8 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="#">Link</a></li>
-				<li><a href="#">Link</a></li>
+				<li><a href="/show/{{nav[2]}}/{{nav[3]}}">zurück</a></li>
+				<li><a href="/show/{{nav[4]}}/{{nav[5]}}">vorwärts</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -62,11 +62,15 @@
 				    <div class="ym-box">	
                     </div>
                         <div class="ym-grid linearize-level-1">
-                            <div class="ym-g20 ym-gl">Montag</div>	
-                            <div class="ym-g20 ym-gl">Dienstag</div>	
-                            <div class="ym-g20 ym-gl">Mittwoch</div>	
-                            <div class="ym-g20 ym-gl">Donnerstag</div>	
-                            <div class="ym-g20 ym-gl">Freitag</div>	
+                            {% for day in days %}
+                            <div class="ym-g20 ym-gl">{{day.name}}, {{day.date}}
+                            {% if day.meal_name %}
+                            <p>{{ day.meal_name }}<a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x]</a></p> 
+                            {% else %}
+                            <a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></div>
+                            {% endif %}
+                            {% endfor %}
+
                         </div>
 				</div>
 				<div class="ym-g25 ym-gr">

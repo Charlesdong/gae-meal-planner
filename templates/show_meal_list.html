@@ -1,18 +1,99 @@
 <!DOCTYPE html>
 <html lang="de">
-    <head class="html5">
-        <meta charset="utf-8">
-        <title>Alle Gerichte</title>
-        <link rel="stylesheet" type="text/css"  href="/static/style.css">
-        </head>
-    <body>
+<head>
+	<meta charset="utf-8"/>
+	<title>Essens-Plan</title>
+
+	<!-- Mobile viewport optimisation -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- (en) Add your meta data here -->
+	<!-- (de) Fuegen Sie hier ihre Meta-Daten ein -->
+
+	<link href="/static/css/mtk.css" rel="stylesheet" type="text/css"/>
+	<!--[if lte IE 7]>
+	<link href="../yaml/core/iehacks.css" rel="stylesheet" type="text/css" />
+	<![endif]-->
+
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	
+	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
+	
+	
+</head>
+<body>
+
+
+
+
+
+<div class="ym-wrapper">
+		<div class="ym-wbox">
+<header>
+		<h1>Essens-Plan</h1>
+</header>
+
+<nav id="nav">
+	<div class="ym-wrapper">
+		<div class="ym-hlist">
+			<ul>
+				<!-- <li class="active"><strong>Active</strong></li> -->
+				<li><a href="/">Home</a></li>
+				<li><a href="#">Link</a></li>
+			</ul>
+            <!--
+			<form class="ym-searchform">
+				<input class="ym-searchfield" type="search" placeholder="Search..." />
+				<input class="ym-searchbutton" type="submit" value="Search" />
+			</form>
+            -->
+		</div>
+	</div>
+</nav>
+
+<div id="main">
+	<div class="ym-wrapper">
+		<div class="ym-wbox">
+		<h2>Liste der Gerichte</h2>	
+			<section class="ym-grid">
+				<div class="ym-g75 ym-gl">
+				    <div class="ym-box">	
+                    </div>
         {% for meal in meal_list %}
             <div><a href="/del_meal/{{meal.key().name()}}/{{day_date}}">[x]</a>{{meal.name}} {{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}">Für den Tag auswählen</a></div>
         {% endfor %}
 
-
-    <p><a href="/add_meal/{{day_date}}">Gericht hinzufügen</a></p>
-
-    
-    </body>
+                    
+                </div>
+				<div class="ym-g25 ym-gr">
+                    <div class="ym-box">
+                    </div>
+                    <form method="post">
+                        <input type="hidden" name="day_date" value="{{day_date}}">
+                        {% for category in meal_categories%}
+                            <p><input type="radio" name="sort_criteria" value="{{category}}">{{category}}</p>
+                        {% endfor%}
+                        <input type="radio" name="sort_criteria" value="">Alles anzeigen
+                        <input type="submit" value="Abschicken!">
+                    </form>
+				</div> 
+            </section> 
+			
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="ym-wrapper">
+		<div class="ym-wbox">
+			<p>© <a href="http://www.marcus-kemper.de">Marcus Kemper</a> 2012 &ndash; Layout based on <a href="http://www.yaml.de">YAML</a></p>
+		</div>
+	</div>
+</footer>
+		</div>
+</div>
+<!-- full skip link functionality in webkit browsers -->
+<script src="../yaml/core/js/yaml-focusfix.js"></script>
+</body>
 </html>

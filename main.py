@@ -137,9 +137,24 @@ class MealDel(Handler):
 
 class MealShowList(Handler):
 
-    def get(self, day_object_date=actual_day):
-        meal_list = model.db.GqlQuery("SELECT * FROM Meal ORDER BY category DESC")
-        self.render("show_meal_list.html", meal_list = meal_list, day_date = day_object_date)
+    def get(self, day_object_date=actual_day, sort_criteria = "", meal_categories = []):
+        if sort_criteria:
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria) 
+            self.render("show_meal_list.html", meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
+        else:
+            meal_list = model.Meal.all()
+            self.render("show_meal_list.html", meal_list = meal_list, day_date = day_object_date, meal_categories = model.meal_categories) 
+
+
+    def post(self, day_date="", sort_criteria=""):
+        
+        day_date = self.request.get("day_date")
+        meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria = self.request.get("sort_criteria"))
+        
+        print day_date
+        print sort_criteria
+        
+        self.render("show_meal_list.html", meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
 
 # Day Handler Classes
 
@@ -229,6 +244,8 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list', MealShowList),
+                            ('/show_meal_list/(2\d{3}-\d{2}-\d{2})/(\w+)/(\w+)', MealShowList),
+                            ('/show_meal_list/(2\d{3}-\d{2}-\d{2})/(\w+)', MealShowList),
                             ('/show_meal_list/(2\d{3}-\d{2}-\d{2})', MealShowList),
                             ('/show', ShowPlanner),
                             ('/show/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShowPlanner),

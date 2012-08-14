@@ -61,12 +61,23 @@
 				<div class="ym-g75 ym-gl">
 				    <div class="ym-box">	
                     </div>
-                    Hier die Liste der Gerichte erzeugen!
+        {% for meal in meal_list %}
+            <div><a href="/del_meal/{{meal.key().name()}}/{{day_date}}">[x]</a>{{meal.name}} {{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}">Für den Tag auswählen</a></div>
+        {% endfor %}
+
+                    
                 </div>
 				<div class="ym-g25 ym-gr">
                     <div class="ym-box">
                     </div>
-                    zusatz infos rechts
+                    <form method="post">
+                        <input type="hidden" value="{{day_date}}">
+                        {% for criteria in sort_criteria %}
+                            <input type="radio" name="sort_criteria" value={{criteria}}>{{criteria}}
+                        {% endfor%}
+                        <input type="radio" name="sort_criteria" value=None>Alles anzeigen
+                        <input type="submit" value="Abschicken!">
+                    </form>
 				</div> 
             </section> 
 			
