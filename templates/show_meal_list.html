@@ -41,7 +41,7 @@
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
 				<li><a href="/">Home</a></li>
-				<li><a href="#">Link</a></li>
+				<li><a href="/add_meal/{{day_date}}">Gericht hinzufügen</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -75,8 +75,8 @@
                         {% for category in meal_categories%}
                             <p><input type="radio" name="sort_criteria" value="{{category}}">{{category}}</p>
                         {% endfor%}
-                        <input type="radio" name="sort_criteria" value="">Alles anzeigen
-                        <input type="submit" value="Abschicken!">
+                        <p><input type="radio" name="sort_criteria" value="all">Alles anzeigen</p>
+                        <p><input type="submit" value="Sortieren!"></p>
                     </form>
 				</div> 
             </section> 

@@ -149,10 +149,12 @@ class MealShowList(Handler):
     def post(self, day_date="", sort_criteria=""):
         
         day_date = self.request.get("day_date")
-        meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria = self.request.get("sort_criteria"))
+        sort_criteria = self.request.get("sort_criteria")
         
-        print day_date
-        print sort_criteria
+        if sort_criteria == "all":
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal")
+        else:
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria = self.request.get("sort_criteria"))
         
         self.render("show_meal_list.html", meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
 
