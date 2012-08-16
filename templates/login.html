@@ -68,6 +68,9 @@
                         
                         <p><input type="submit"></p>
                         </form>
+                        {% if error %}
+                            <div class="box error">{{ error }}</div>
+                        {% endif %}
                 </div>
 				<div class="ym-g25 ym-gr">
                     <div class="ym-box">

@@ -22,6 +22,8 @@ import os
 import datetime
 import time
 import random
+import hashlib
+import re
 
 import model
 
@@ -85,22 +87,62 @@ class Handler(webapp2.RequestHandler):
 
 class Login(Handler):
     
-    def get(self):
-        self.render("login.html")
+    def get(self, error=""):
+        self.render("login.html", error = error)
 
-    def post(self, email, pwd):
-        pass
+    def post(self, email="", pwd=""):
+        
+        pwd = self.request.get("pwd")
+        pwd = hashlib.sha256(pwd)
+        pwd = str(pwd.hexdigest())
+        
+        user = model.User.all().filter("email =", self.request.get("email"))
+        
+        if user.get() and user.get().pwd == pwd:
+            self.redirect("/show")
+        else:
+            error = "Login ungültig. Bitte versuchen Sie es nochmal!"
+            self.render("login.html", error = error)
 
 class SignUp(Handler):
 
-    def get(self):
-        self.render("signup.html")
+    def get(self, error=""):
+        self.render("signup.html", error=error)
 
-    def post(self, name, lastname, email, pwd):
+    def post(self, name="", lastname="", email="", pwd="", pwd_check=""):
         name = self.request.get("name")
         lastname = self.request.get("lastname")
         email = self.request.get("email")
-        pwd = 
+        pwd = self.request.get("pwd") 
+        pwd_check = self.request.get("pwd_check")
+
+        # validate the form
+        
+        user = model.User.all().filter("email =", self.request.get("email"))
+           
+        if name and lastname and email and pwd and pwd_check:
+            if user.get():
+                error = "Emailadresse ist bereits registriert. Bitte wählen Sie eine andere!"
+                self.render("signup.html", error = error)
+            else:    
+                if pwd == pwd_check:
+                    if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+                        pwd = hashlib.sha256(pwd)
+                        pwd = str(pwd.hexdigest())
+                        u = model.User(name = name, lastname = lastname, email = email, pwd = pwd)
+                        u.put()
+                        self.redirect("/")
+                    else:
+                        error = "Emailadresse fehlerhaft!"
+                        self.render("signup.html", error = error)
+                else:
+                    error = "Die Paßwörter stimmen nicht miteinander überein!"
+                    self.render("signup.html", error = error)
+        else:
+            error = "Bitte alle Felder ausfüllen!"
+            self.render("signup.html", error = error)
+            
+        
 
 
 
@@ -291,7 +333,7 @@ class EntryRemove(Handler):
 
 class MainHandler(Handler):
     def get(self):
-        self.redirect("/show")
+        self.redirect("/login")
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
