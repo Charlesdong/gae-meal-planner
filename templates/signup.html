@@ -40,9 +40,7 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="/">Home</a></li>
-                <li><form method="post"><input type="hidden" name="day_date" value="{{day_date}}"><select name="sort_criteria" onchange="this.form.submit();">{%for category in meal_categories %}<option name = "category" value="{{category}}">{{category}}</option>{% endfor %} <option name = "category" value="all">Alles anzeigen!</option></select></li></form>
-				<li><a href="/add_meal/{{day_date}}">Gericht hinzufügen</a></li>
+				<!-- <li><a href="#">Home</a></li> -->
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -57,22 +55,30 @@
 <div id="main">
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-		<h2>Liste der Gerichte</h2>	
+		<h2>Sign-Up</h2>	
 			<section class="ym-grid">
 				<div class="ym-g75 ym-gl">
 				    <div class="ym-box">	
                     </div>
-        {% for meal in meal_list %}
-            <div class="info box"><a href="/del_meal/{{meal.key().name()}}/{{day_date}}">[x] </a><b>{{meal.name}}</b> Kategorie:{{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}"> [Für den {{day_date}} auswählen.]</a></div>
-        {% endfor %}
-
-                    
+                        <form method="post">
+                        <div class="info box">    
+                        <p>Name: <input type="text" name="name"></p>
+                        <p>Nachname: <input type="text" name="lastname"></p>
+                        <p>Email: <input type="text" name="email"></p>
+                        <p>Passwort: <input type="password" name="pwd"></p>
+                        <p>Passwort wiederholen: <input type="password" name="pwd_check"></p>
+                        </div>
+                        
+                        <p><input type="submit" value="Abschicken!"></p>
+                        </form>
                 </div>
 				<div class="ym-g25 ym-gr">
                     <div class="ym-box">
                     </div>
-                    <!-- Hier Inhalte für den rechten Teil einfügen -->
-				</div> 
+				
+                <!-- hier kann man zusatzinfos rechts einblenden! -->
+                
+                </div> 
             </section> 
 			
 		</div>
@@ -81,7 +87,7 @@
 <footer>
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-			<p>© <a href="http://www.marcus-kemper.de">Marcus Kemper</a> 2012 &ndash; Layout based on <a href="http://www.yaml.de">YAML</a></p>
+			<p>© <a href="http://www.marcus-kemper.de">marcus kemper</a> 2012 &ndash; layout based on <a href="http://www.yaml.de">yaml</a></p>
 		</div>
 	</div>
 </footer>

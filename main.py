@@ -71,15 +71,38 @@ def construct_table(year, cw):
 # Handler class for the template engine
 
 class Handler(webapp2.RequestHandler):
-  def write(self, *a, **kw):
-    self.response.out.write(*a, **kw)
+    def write(self, *a, **kw):
+        self.response.out.write(*a, **kw)
 
-  def render_str(self, template, **params):
-    t = jinja_env.get_template(template)
-    return t.render(params)
+    def render_str(self, template, **params):
+        t = jinja_env.get_template(template)
+        return t.render(params)
 
-  def render(self, template, **kw):
-    self.write(self.render_str(template, **kw))
+    def render(self, template, **kw):
+        self.write(self.render_str(template, **kw))
+
+# Classes for loging in and singing up Users
+
+class Login(Handler):
+    
+    def get(self):
+        self.render("login.html")
+
+    def post(self, email, pwd):
+        pass
+
+class SignUp(Handler):
+
+    def get(self):
+        self.render("signup.html")
+
+    def post(self, name, lastname, email, pwd):
+        name = self.request.get("name")
+        lastname = self.request.get("lastname")
+        email = self.request.get("email")
+        pwd = 
+
+
 
 # Meal Handler Classes
 
@@ -272,6 +295,8 @@ class MainHandler(Handler):
 
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
+                            ('/login', Login),
+                            ('/signup', SignUp),
                             ('/add_meal/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list', MealShowList),
