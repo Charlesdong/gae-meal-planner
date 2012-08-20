@@ -15,7 +15,8 @@ class User(db.Model):
     lastname = db.StringProperty(required = True)
     email = db.EmailProperty(required = True)
     pwd = db.StringProperty(required = True)
-
+    
+    
 class Day(db.Model):
     name = db.StringProperty(required = True, choices=set(["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"]))
     date = db.DateProperty()
@@ -31,5 +32,6 @@ class Meal(db.Model):
     day = db.ListProperty(db.Key)
     owner = db.ReferenceProperty(User)
 
-
-
+class Authenticated(db.Model):
+    logged_in_at = db.DateTimeProperty(auto_now = True)
+    

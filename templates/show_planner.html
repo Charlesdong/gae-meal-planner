@@ -40,8 +40,8 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="/show/{{nav[2]}}/{{nav[3]}}">zurück</a></li>
-				<li><a href="/show/{{nav[4]}}/{{nav[5]}}">vorwärts</a></li>
+				<li><a href="/show/{{nav[6]}}/{{nav[2]}}/{{nav[3]}}">zurück</a></li>
+				<li><a href="/show/{{nav[6]}}/{{nav[4]}}/{{nav[5]}}">vorwärts</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -66,9 +66,9 @@
                                 <div class="box info">
                                     {{day.name}}, {{day.date}}
                                     {% if day.meal_name %}
-                                        <p><a href="/remove_entry/{{day.date}}/{{day.meal_key_name}}">[x] </a>{{day.meal_name}} <a href="/show_meal_detail/{{day.date}}/{{day.meal_key_name}}">[info]</a></p> 
+                                        <p><a href="/remove_entry/{{user}}/{{day.date}}/{{day.meal_key_name}}">[x] </a>{{day.meal_name}} <a href="/show_meal_detail/{{user}}/{{day.date}}/{{day.meal_key_name}}">[info]</a></p> 
                                     {% else %}
-                                    <p><a href="/show_meal_list/{{day.date}}">Gericht eintragen</a></p>
+                                    <p><a href="/show_meal_list/{{nav[6]}}/{{day.date}}">Gericht eintragen</a></p>
                                     {% endif %}
                                 </div>
                             </div>

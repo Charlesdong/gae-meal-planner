@@ -40,9 +40,9 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="/">Home</a></li>
-                <li><form method="post"><input type="hidden" name="day_date" value="{{day_date}}"><select name="sort_criteria" onchange="this.form.submit();">{%for category in meal_categories %}<option name = "category" value="{{category}}">{{category}}</option>{% endfor %} <option name = "category" value="all">Alles anzeigen!</option></select></li></form>
-				<li><a href="/add_meal/{{day_date}}">Gericht hinzufügen</a></li>
+				<li><a href="/show/{{user}}">Home</a></li>
+                <li><form method="post"><input type="hidden" name="day_date" value="{{day_date}}"><input type="hidden" name="user" value ="{{user}}"><select name="sort_criteria" onchange="submit();"><option>Wählen Sie eine Kategorie!</option>{%for category in meal_categories %}<option name = "category" value="{{category}}">{{category}}</option>{% endfor %} <option name = "category" value="all">Alles anzeigen!</option></select></li></form>
+				<li><a href="/add_meal/{{user}}/{{day_date}}">Gericht hinzufügen</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -63,7 +63,7 @@
 				    <div class="ym-box">	
                     </div>
         {% for meal in meal_list %}
-            <div class="info box"><a href="/del_meal/{{meal.key().name()}}/{{day_date}}">[x] </a><b>{{meal.name}}</b> Kategorie:{{meal.category}} <a href="/commit_entry/{{day_date}}/{{meal.key().name()}}"> [Für den {{day_date}} auswählen.]</a></div>
+            <div class="info box"><a href="/del_meal/{{user}}/{{meal.key().name()}}/{{day_date}}">[x] </a><b>{{meal.name}}</b> Kategorie:{{meal.category}} <a href="/commit_entry/{{user}}/{{day_date}}/{{meal.key().name()}}"> [Für den {{day_date}} auswählen.]</a></div>
         {% endfor %}
 
                     

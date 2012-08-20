@@ -40,8 +40,8 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="/">Home</a></li>
-				<li><a href="/show_meal_list/{{day_date}}">Liste der Gerichte</a></li>
+				<li><a href="/show/{{user}}">Home</a></li>
+				<li><a href="/show_meal_list/{{user}}/{{day_date}}">Liste der Gerichte</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -63,6 +63,7 @@
                     </div>
 				<form method="post">
         <input type="hidden" name="day_date" value="{{day_date}}">
+        <input type="hidden" name="user" value="{{user}}"
         <p>Name: <input type="text" name="name" value="{{ name }}"></p>
         <p>Kategorie:
         <select name="selection">
