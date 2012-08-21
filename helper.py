@@ -3,6 +3,8 @@
 
 import datetime
 import time
+import model
+
 
 class DateHelper(object):
 
@@ -59,5 +61,7 @@ class DateHelper(object):
         
     def get_actual_year(self):
         return actual_year
+
+
 
         
