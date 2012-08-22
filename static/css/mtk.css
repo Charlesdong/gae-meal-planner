@@ -28,7 +28,7 @@
 /* import print layout | Druck-Layout einbinden */
 @import url(/static/yaml/print/print.css);
 
-/* eigene CSS Anweisungen, überschreiben Vorgaben */
+/* eigene CSS Anweisungen, ï¿½berschreiben Vorgaben */
 
 /* Basic Element Styling */
 	header {
@@ -132,7 +132,7 @@ background: #E0561B;
 		margin: 0;
 	}
 
-	.ym-searchform {
+    .ym-searchform {
 		display:block;
 		float: none;
 		width: auto;
