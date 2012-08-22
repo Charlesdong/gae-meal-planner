@@ -93,8 +93,17 @@ class Error(Handler):
     
     def get(self, error=""):
         self.render("error.html", error = error)
-            
-        
+
+# cron class for cleaning up the authenticated db            
+class CleanUp(Handler):
+    
+    def get(self):
+        users = model.Authenticated.all()
+        for user in users:
+            diff = datetime.datetime.now() - user.logged_in_at
+            if diff.days >= 1:
+                user.delete()
+                
           
 # Classes for loging in and singing up Users
 class Login(Handler):
@@ -418,6 +427,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/logout/([a-fA-F\d]{64})', Logout),
                             ('/error', Error),
                             ('/signup/iwenttherebytrain', SignUp),
+                            ('/tasks/cleanup', CleanUp),
                             ('/add_meal/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/([a-fA-F\d]{64})/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list/([a-fA-F\d]{64})', MealShowList),

@@ -1,0 +1,4 @@
+cron:
+- description: daily authenticated cleanup
+  url: /tasks/cleanup
+  schedule: every 24 hours
