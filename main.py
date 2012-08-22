@@ -74,12 +74,13 @@ class Handler(webapp2.RequestHandler):
     
     def verify_user(self, user):
         user = model.Authenticated.get_by_key_name(user)
-        diff = datetime.datetime.now() - user.logged_in_at
+        
                 
         if not user:
             self.redirect("/login")
         else:
-           if diff.seconds > 60:
+           diff = datetime.datetime.now() - user.logged_in_at 
+           if diff.seconds > 1800:
                print diff
                user.delete()
                error = u"Ihre Benutzersitzung ist abgelaufen. Sie werden zum Login weitergeleitet..."
@@ -98,8 +99,8 @@ class Error(Handler):
 # Classes for loging in and singing up Users
 class Login(Handler):
     
-    def get(self, error=""):
-        self.render("login.html", error = error)
+    def get(self, error="", thanks=""):
+        self.render("login.html", error = error, thanks = thanks)
 
     def post(self, email="", pwd=""):
         
@@ -162,6 +163,17 @@ class SignUp(Handler):
         else:
             error = "Bitte alle Felder ausfüllen!"
             self.render("signup.html", error = error)
+            
+
+class Logout(Handler):       
+    
+    def get(self, user):
+        user = model.Authenticated.get_by_key_name(user)
+        if user:
+            user.delete()
+            self.redirect("/login")
+        else:
+            self.redirect("/login")
             
         
 
@@ -403,6 +415,7 @@ class MainHandler(Handler):
 app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/add_meal', MealAdd),
                             ('/login', Login),
+                            ('/logout/([a-fA-F\d]{64})', Logout),
                             ('/error', Error),
                             ('/signup/iwenttherebytrain', SignUp),
                             ('/add_meal/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', MealAdd),
