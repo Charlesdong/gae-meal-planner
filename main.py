@@ -79,10 +79,10 @@ class Handler(webapp2.RequestHandler):
         if not user:
             self.redirect("/login")
         else:
-           if diff.seconds > 1800:
+           if diff.seconds > 60:
                print diff
                user.delete()
-               error = "Ihre Benutzersitzung ist abgelaufen. Sie werden zum Login weitergeleitet..."
+               error = u"Ihre Benutzersitzung ist abgelaufen. Sie werden zum Login weitergeleitet..."
                self.render("error.html", error = error)
                
            else:
@@ -112,6 +112,9 @@ class Login(Handler):
         if user.get() and user.get().pwd == pwd:
             # write login and timestamp to db
             key_name = self.request.get("email")
+            for i in range(1,10):
+                key_name = key_name + random.choice(["a","b","c","d","e","f","g","h","i","j","k","l","n","m","o","p","q","r","s","t","u","v","w","x","y","z"]) 
+            key_name = key_name+str(random.randint(1000,9999))
             key_name = hash_str(key_name)
             logged_in_user = key_name
             a = model.Authenticated(key_name = key_name)
@@ -119,7 +122,7 @@ class Login(Handler):
             self.redirect("/show/"+logged_in_user)
         # login failed
         else:
-            error = "Login ungültig. Bitte versuchen Sie es nochmal!"
+            error = u"Login ungültig. Bitte versuchen Sie es nochmal!"
             self.render("login.html", error = error)
 
 class SignUp(Handler):
