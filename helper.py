@@ -64,4 +64,37 @@ class DateHelper(object):
 
 
 
+class ShoppingList(object):
+    
+    def __init__(self):
+        self.owner = ""
+        self.items = []
+        
+    
+    def add_item(self, item):
+        self.items.append(item)
+        return self
+    
+    def remove_item(self, item):
+        try:
+            self.items.remove(item)
+        except ValueError():
+            print "Entfernen des Elementes hat nicht funktioniert."
+        return self
+    
+    def clean_list(self):
+        self.items = []
+        return self
+    
+    def remove_doublets(self):
+        pass
+    
+    def get_list(self):
+        return self.items
+    
+    def save_list(self):
+        s = db.model.ShoppingList(owner = self.owner, items = self.items)
+        s.put()
+        return self
+
         

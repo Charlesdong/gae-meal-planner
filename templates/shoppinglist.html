@@ -40,8 +40,7 @@
 		<div class="ym-hlist">
 			<ul>
 				<!-- <li class="active"><strong>Active</strong></li> -->
-				<li><a href="/show/{{user}}">Home</a></li>
-				<li><a href="/show_meal_list/{{user}}/{{day_date}}">Liste der Gerichte</a></li>
+				<li><a href="{{backlink}}">Home</a></li>
 			</ul>
             <!--
 			<form class="ym-searchform">
@@ -57,45 +56,24 @@
 <div id="main">
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-		<h2>Gericht hinzufügen</h2>	
+		<h2>Einkaufszettel</h2>	
 			<section class="ym-grid">
-				<div class="ym-g75 ym-gl">
+				<div class="ym-g50 ym-gl linearize-level-1">
 				    <div class="ym-box">	
                     </div>
-                    <table>
-				<form method="post">
-        <input type="hidden" name="day_date" value="{{day_date}}">
-        <input type="hidden" name="user" value="{{user}}"
-        
-	        <tr>
-	           <th>Name: </th><td><input type="text" name="name" value="{{ name }}"></td>
-	        </tr>
-	        <tr>
-	           <th>Kategorie:</th>
-		        <td><select name="selection">
-		        {% for category in content %}  
-		        <option name="category" value="{{category}}" >{{category}}</option>
-		        {% endfor %}  
-		        </select></td>
-	        </tr>
-	
-	        <tr>
-	           <th>Zutaten: (Bitte Zutaten mit Komma trennen)</th>
-	           <td><textarea name="ingredients" maxlength=500>{{ingredients}}</textarea></td>
-	        </tr>
-	        <tr>
-	           <th>Referenz: </th><td><input type="text" name="reference" value="{{reference}}"></td>
-	        </tr>
-        
-        
-        <tr><td></td><td><input type="submit" value="Abschicken"></td></tr>
-        </form>
-        </table>
-        {% if error is defined %}
-            <div class="box error">{{error}}</div>
-        {% endif %}
+                <div class="info box">
+	                {% if shoppinglist %}
+		                {% for item in shoppinglist %}
+		                    <p>{{item}}</p>
+		                {% endfor %}
+	                {% else%}
+	                    <p>Noch keine Elemente vorhanden!</p>
+	                {% endif %}
                 </div>
-				<div class="ym-g25 ym-gr">
+                
+                <p><a href="{{backlink}}">Zurück</a></p>
+                </div>
+				<div class="ym-g50 ym-gr linearize-level-2">
                     <div class="ym-box">
                     </div>
 				

@@ -28,7 +28,10 @@ import re
 import model
 import helper
 
+
 datehelper = helper.DateHelper()
+shoppinglist = helper.ShoppingList()
+SESSION_ID = ""
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
@@ -54,8 +57,14 @@ def hash_str(string):
     hash = str(hash.hexdigest())
     return hash
 
-
-
+# generates a unique Session ID
+def generate_SESSION_ID():
+    global SESSION_ID
+    for i in range(1,10):
+        SESSION_ID = SESSION_ID + random.choice(["a","b","c","d","e","f","g","h","i","j","k","l","n","m","o","p","q","r","s","t","u","v","w","x","y","z"]) 
+    SESSION_ID = SESSION_ID+str(random.randint(1000,9999))
+    SESSION_ID = hash_str(SESSION_ID)
+    return SESSION_ID
 
 # Handler class for the template engine
 
@@ -74,8 +83,6 @@ class Handler(webapp2.RequestHandler):
     
     def verify_user(self, user):
         user = model.Authenticated.get_by_key_name(user)
-        
-                
         if not user:
             self.redirect("/login")
         else:
@@ -120,16 +127,15 @@ class Login(Handler):
         
         # login success
         if user.get() and user.get().pwd == pwd:
-            # write login and timestamp to db
-            key_name = self.request.get("email")
-            for i in range(1,10):
-                key_name = key_name + random.choice(["a","b","c","d","e","f","g","h","i","j","k","l","n","m","o","p","q","r","s","t","u","v","w","x","y","z"]) 
-            key_name = key_name+str(random.randint(1000,9999))
-            key_name = hash_str(key_name)
-            logged_in_user = key_name
-            a = model.Authenticated(key_name = key_name)
+            
+            # write login and SESSION_ID to db
+            global SESSION_ID
+            SESSION_ID = generate_SESSION_ID()
+            user = user.get().email
+            a = model.Authenticated(user = user, key_name = SESSION_ID)
             a.put()
-            self.redirect("/show/"+logged_in_user)
+            self.redirect("/show/"+SESSION_ID)
+                    
         # login failed
         else:
             error = u"Login ungültig. Bitte versuchen Sie es nochmal!"
@@ -199,6 +205,15 @@ class MealAdd(Handler):
             
         self.render("add_meal.html", user = user, content = model.meal_categories, error = error, day_date = day_date)
 
+    def parse_ingredients(self, ingredients):
+        
+        # transform string into a list
+        ingredients = ingredients.split(',')
+        
+        return ingredients
+        
+    
+    
     def get(self, user, date=""):
         
         # is there valid logged in user?
@@ -218,7 +233,7 @@ class MealAdd(Handler):
 
         name = self.request.get("name")
         category = self.request.get("selection")
-        ingredients = self.request.get("ingredients")
+        ingredients = self.parse_ingredients(self.request.get("ingredients"))
         reference = self.request.get("reference")
         day_date = self.request.get("day_date")
 
@@ -280,7 +295,7 @@ class MealShowList(Handler):
         
         # is there valid logged in user?
         self.verify_user(user)
-            
+        
         if sort_criteria:
             meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria) 
             self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
@@ -360,7 +375,7 @@ class ShowPlanner(Handler):
                day.meal_name = m.get().name
                day.meal_key_name = m.get().key().name()
                day.put()
-
+        
         self.render("show_planner.html", user = user, days = tab, nav = nav)
 
 class EntryCommit(Handler):
@@ -410,11 +425,22 @@ class EntryRemove(Handler):
         d.get().delete()
         meal.put()
         day.put()
+        
         # hier Parameter für korrekten Rücksprung errechnen (Jahr//KW)
-
         year_cw = datehelper.get_year_cw(str(day_date))
 
         self.redirect("/show/"+user+"/"+str(year_cw[0])+"/"+str(year_cw[1]))
+
+class ShoppingList(Handler):
+    
+    def get(self, user, year, cw):
+        list = []
+        list = shoppinglist.get_list()
+        year = year
+        cw = cw
+        
+        backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
+        self.render("shoppinglist.html", user = user, backlink = backlink, shoppinglist = list)
 
 
 class MainHandler(Handler):
@@ -428,6 +454,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/error', Error),
                             ('/signup/iwenttherebytrain', SignUp),
                             ('/tasks/cleanup', CleanUp),
+                            ('/shoppinglist/([a-fA-F\d]{64})/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShoppingList),
                             ('/add_meal/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/([a-fA-F\d]{64})/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list/([a-fA-F\d]{64})', MealShowList),
