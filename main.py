@@ -6,7 +6,7 @@ Meal-Planner
 
 Tracks your plans for what to eat on a weekly base. 
 
-V.0.1 by Marcus Kemper
+V.0.2 by Marcus Kemper
 
 kemper.mt@googlemail.com 
 '''
@@ -20,7 +20,6 @@ import webapp2
 import jinja2
 import os
 import datetime
-import time
 import random
 import hashlib
 import re
@@ -53,9 +52,9 @@ def construct_table(year, cw):
 
 # generates sha256 hashstring
 def hash_str(string):
-    hash = hashlib.sha256(string)
-    hash = str(hash.hexdigest())
-    return hash
+    hashed_string = hashlib.sha256(string)
+    hashed_string = str(hashed_string.hexdigest())
+    return hashed_string
 
 # generates a unique Session ID
 def generate_SESSION_ID():
@@ -86,15 +85,15 @@ class Handler(webapp2.RequestHandler):
         if not user:
             self.redirect("/login")
         else:
-           diff = datetime.datetime.now() - user.logged_in_at 
-           if diff.seconds > 1800:
-               print diff
-               user.delete()
-               error = u"Ihre Benutzersitzung ist abgelaufen. Sie werden zum Login weitergeleitet..."
-               self.render("error.html", error = error)
+            diff = datetime.datetime.now() - user.logged_in_at 
+            if diff.seconds > 1800:
+                print diff
+                user.delete()
+                error = u"Ihre Benutzersitzung ist abgelaufen. Sie werden zum Login weitergeleitet..."
+                self.render("error.html", error = error)
                
-           else:
-               return self               
+            else:
+                return self               
            
 class Error(Handler):  
     
@@ -207,7 +206,9 @@ class MealAdd(Handler):
 
     def parse_ingredients(self, ingredients):
         
-        # transform string into a list
+        # remove whitespaces
+        ingredients = ingredients.replace(' ','')
+        # transform strings into a list of strings
         ingredients = ingredients.split(',')
         
         return ingredients
@@ -228,7 +229,7 @@ class MealAdd(Handler):
             
         key_name=""
         for i in range(1,10):
-           key_name = key_name + random.choice(["a","b","c","d","e","f","g","h","i","j","k","l","n","m","o","p","q","r","s","t","u","v","w","x","y","z"]) 
+            key_name = key_name + random.choice(["a","b","c","d","e","f","g","h","i","j","k","l","n","m","o","p","q","r","s","t","u","v","w","x","y","z"]) 
         key_name = key_name+str(random.randint(1000,9999))
 
         name = self.request.get("name")
@@ -291,7 +292,7 @@ class MealDel(Handler):
 
 class MealShowList(Handler):
 
-    def get(self, user, day_object_date=datehelper.get_actual_day, sort_criteria = "", meal_categories = []):
+    def get(self, user, day_date=datehelper.get_actual_day, sort_criteria = "", meal_categories = []):
         
         # is there valid logged in user?
         self.verify_user(user)
@@ -301,7 +302,7 @@ class MealShowList(Handler):
             self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
         else:
             meal_list = model.Meal.all()
-            self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_object_date, meal_categories = model.meal_categories) 
+            self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories) 
 
 
     def post(self, user, day_date="", sort_criteria=""):
@@ -336,7 +337,7 @@ class MealShowDetail(Handler):
         meal = model.Meal.get_by_key_name(meal_key_name)
         
         # Jump to the template
-        self.render("show_meal_detail.html", user = user, meal = meal, backlink = backlink)
+        self.render("show_meal_detail.html", user = user, day_date = day_date, meal = meal, backlink = backlink)
 
 
 
@@ -372,9 +373,9 @@ class ShowPlanner(Handler):
         for day in tab:
             m = model.Meal.all().filter('day =', day.key())
             if m.get():
-               day.meal_name = m.get().name
-               day.meal_key_name = m.get().key().name()
-               day.put()
+                day.meal_name = m.get().name
+                day.meal_key_name = m.get().key().name()
+                day.put()
         
         self.render("show_planner.html", user = user, days = tab, nav = nav)
 
@@ -431,17 +432,39 @@ class EntryRemove(Handler):
 
         self.redirect("/show/"+user+"/"+str(year_cw[0])+"/"+str(year_cw[1]))
 
-class ShoppingList(Handler):
+# Displays the actual Shopping-List
+class ShoppingListShow(Handler):
     
     def get(self, user, year, cw):
-        list = []
-        list = shoppinglist.get_list()
+        sl = shoppinglist.get_list()
         year = year
         cw = cw
         
         backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
-        self.render("shoppinglist.html", user = user, backlink = backlink, shoppinglist = list)
+        self.render("shoppinglist.html", user = user, backlink = backlink, shoppinglist = sl)
 
+class ShoppingListAdd(Handler):
+    
+    def get(self, user, day_date, meal_key_name, item):
+        
+        # is there valid logged in user?
+        self.verify_user(user)
+        
+        # adding item to shopping-list
+        shoppinglist.add_item(item)
+        
+        #Constructing the Back Link
+
+        year_cw = datehelper.get_year_cw(day_date)
+        backlink = "/show/"+user+"/"+str(year_cw[0])+"/"+str(year_cw[1])
+
+        # Getting the right Meal
+        meal = model.Meal.get_by_key_name(meal_key_name)
+        
+        # Jump to the template
+        self.render("show_meal_detail.html", user = user, day_date = day_date, meal = meal, backlink = backlink)
+
+        
 
 class MainHandler(Handler):
     def get(self):
@@ -454,7 +477,8 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/error', Error),
                             ('/signup/iwenttherebytrain', SignUp),
                             ('/tasks/cleanup', CleanUp),
-                            ('/shoppinglist/([a-fA-F\d]{64})/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShoppingList),
+                            ('/shoppinglist/([a-fA-F\d]{64})/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShoppingListShow),
+                            ('/shoppinglist/add/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})/(\w+)', ShoppingListAdd),
                             ('/add_meal/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/([a-fA-F\d]{64})/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list/([a-fA-F\d]{64})', MealShowList),

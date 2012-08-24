@@ -63,7 +63,7 @@
                     </div>
                 <div class="info box">    
                 <p><b>Kategorie:</b> {{meal.category}}</p>
-                <p><b>Zutaten:</b></br>{% for meal in meal.ingredients %} {{meal}} {% endfor %}</p>
+                <p><b>Zutaten:</b></br>{% for item in meal.ingredients %} <a href="/shoppinglist/add/{{user}}/{{day_date}}/{{meal.key().name()}}/{{item}}">{{item}}</a> {% endfor %}</p>
                 <p><b>Referenz:</b> {{meal.reference}}</p>
                 </div>
                 

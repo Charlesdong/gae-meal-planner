@@ -25,8 +25,8 @@ class DateHelper(object):
     def get_week(self, year, cw):
         first_monday = 4 - datetime.date(year,1,4).weekday()
         monday_of_kw = first_monday + (cw - 1)*7
-        list = range(monday_of_kw, monday_of_kw + 7)
-        return list
+        week = range(monday_of_kw, monday_of_kw + 7)
+        return week
 
     def get_date(self, year, day_of_year):
         d = datetime.datetime(year,1,1)+datetime.timedelta(day_of_year - 1)
@@ -45,7 +45,6 @@ class DateHelper(object):
     def get_year_cw(self, date):
         date = self.gen_date_obj(date)
         year_cw = date.isocalendar()
-        #backlink = "/show/"+str(date[0])+"/"+str(date[1])
         return year_cw
     
     def gen_date_obj(self, date):
@@ -54,13 +53,13 @@ class DateHelper(object):
         return date
     
     def get_actual_day(self):
-        return actual_day
+        return self.actual_day
         
     def get_actual_calendar_week(self):
-        return actual_calendar_week
+        return self.actual_calendar_week
         
     def get_actual_year(self):
-        return actual_year
+        return self.actual_year
 
 
 
@@ -92,8 +91,12 @@ class ShoppingList(object):
     def get_list(self):
         return self.items
     
+    def update_list(self, shoppinglist):
+        self.list = shoppinglist
+        return self    
+    
     def save_list(self):
-        s = db.model.ShoppingList(owner = self.owner, items = self.items)
+        s = model.ShoppingList(owner = self.owner, items = self.items)
         s.put()
         return self
 
