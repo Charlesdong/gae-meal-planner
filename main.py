@@ -27,9 +27,13 @@ import re
 import model
 import helper
 
-
+# delivers date and time formats
 datehelper = helper.DateHelper()
-shoppinglist = helper.ShoppingList()
+
+# collects all active shoppinglists
+shoppinglist_dict = {}
+
+# unique session id
 SESSION_ID = ""
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -126,11 +130,21 @@ class Login(Handler):
         
         # login success
         if user.get() and user.get().pwd == pwd:
-            
-            # write login and SESSION_ID to db
+                       
+            # retrieve login and generate SESSION_ID
             global SESSION_ID
             SESSION_ID = generate_SESSION_ID()
             user = user.get().email
+            
+            # generate shopping-list for user
+            global shoppinglist_dict
+            
+            shoppinglist = helper.ShoppingList(user)
+            
+            #adding to dictionary
+            shoppinglist_dict.update({SESSION_ID:shoppinglist})
+            
+            # write login and SESSION_ID to db
             a = model.Authenticated(user = user, key_name = SESSION_ID)
             a.put()
             self.redirect("/show/"+SESSION_ID)
@@ -436,7 +450,9 @@ class EntryRemove(Handler):
 class ShoppingListShow(Handler):
     
     def get(self, user, year, cw):
-        sl = shoppinglist.get_list()
+        global shoppinglist_dict
+        sl = shoppinglist_dict.get(user)
+        sl.get_list()
         year = year
         cw = cw
         
@@ -451,7 +467,9 @@ class ShoppingListAdd(Handler):
         self.verify_user(user)
         
         # adding item to shopping-list
-        shoppinglist.add_item(item)
+        global shoppinglist_dict
+        sl = shoppinglist_dict.get(user)
+        sl.add_item(item)
         
         #Constructing the Back Link
 
@@ -464,6 +482,14 @@ class ShoppingListAdd(Handler):
         # Jump to the template
         self.render("show_meal_detail.html", user = user, day_date = day_date, meal = meal, backlink = backlink)
 
+class Debug(Handler):
+    
+    def get(self):
+        self.write(SESSION_ID)
+        global shoppinglist_dict
+        for key in shoppinglist_dict:
+            self.write(shoppinglist_dict.items())
+        
         
 
 class MainHandler(Handler):
@@ -471,6 +497,7 @@ class MainHandler(Handler):
         self.redirect("/login")
         
 app = webapp2.WSGIApplication([('/', MainHandler),
+                            ('/debug', Debug),
                             ('/add_meal', MealAdd),
                             ('/login', Login),
                             ('/logout/([a-fA-F\d]{64})', Logout),

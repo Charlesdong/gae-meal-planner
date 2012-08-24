@@ -65,8 +65,8 @@ class DateHelper(object):
 
 class ShoppingList(object):
     
-    def __init__(self):
-        self.owner = ""
+    def __init__(self, owner):
+        self.owner = owner
         self.items = []
         
     
