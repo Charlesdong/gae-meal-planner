@@ -21,12 +21,45 @@
 	
 	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
 	
+	<script type="text/javascript" src="/static/lib/jquery-1.7.1.min.js"></script>
 	
+	<script type="text/javascript">
+        
+	$(document).ready(function() {
+		   $("input[type*='submit']").click(function() {
+			   var json_shoppinglist = JSON.stringify(shoppinglist)
+	            $.post("/shoppinglist/add/{{user}}/{{day_date}}", {'data': json_shoppinglist});
+		   });
+		 });
+	
+	
+	var shoppinglist = new Array();
+        
+        function add_item(obj) {
+            var item = document.getElementById(obj).innerHTML;
+            shoppinglist.push(item);
+            
+            var divTag = document.createElement("div");
+            divTag.id = item;
+            divTag.innerHTML = item;
+            divTag.setAttribute("onClick","del_item(this.id);")
+            document.getElementById("shopping_list").appendChild(divTag);
+        }
+        
+        function del_item(obj){
+            var item = document.getElementById(obj).innerHTML;
+            var idx = shoppinglist.indexOf(item); // Find the index
+            if(idx!=-1) shoppinglist.splice(idx, 1); // Remove it if really found!
+            
+            var parentElement = document.getElementById("shopping_list");
+            parentElement.removeChild(document.getElementById(obj))
+        }
+        
+        
+    </script>
+
 </head>
 <body>
-
-
-
 
 
 <div class="ym-wrapper">
@@ -54,32 +87,37 @@
 </nav>
 
 <div id="main">
+
 	<div class="ym-wrapper">
 		<div class="ym-wbox">
-		<h2>{{meal.name}}</h2>	
+		
 			<section class="ym-grid">
 				<div class="ym-g50 ym-gl linearize-level-1">
-				    <div class="ym-box">	
-                    </div>
-                <div class="info box">    
-                <p><b>Kategorie:</b> {{meal.category}}</p>
-                <p><b>Zutaten:</b></br>{% for item in meal.ingredients %} <a href="/shoppinglist/add/{{user}}/{{day_date}}/{{meal.key().name()}}/{{item}}">{{item}}</a> {% endfor %}</p>
-                <p><b>Referenz:</b> {{meal.reference}}</p>
-                </div>
-                
-                <p><a href="{{backlink}}">Zurück</a></p>
+				    <div class="ym-box">
+				        <h2>{{meal.name}}</h2>  	
+		                <div class="info box">    
+		                <p><b>Kategorie:</b> {{meal.category}}</p>
+		                <p><b>Zutaten:</b></br>{% for item in meal.ingredients %} <div id="sl_{{item}}" onClick="add_item(this.id);" >{{item}}</div> {% endfor %}</p>
+		                <p><b>Referenz:</b> {{meal.reference}}</p>
+		                </div>
+		                <p><a href="{{backlink}}">Zurück</a></p>
+		            </div>
                 </div>
 				<div class="ym-g50 ym-gr linearize-level-2">
                     <div class="ym-box">
+						<h2>Einkaufszettel</h2>
+		                <div id="shopping_list"></div>
+		                
+		                <input type="submit"> 
+		                </form>
                     </div>
-				
-                <!-- Hier kann man Zusatzinfos rechts einblenden! -->
-                
+                    
                 </div> 
             </section> 
 			
 		</div>
 	</div>
+
 </div>
 <footer>
 	<div class="ym-wrapper">

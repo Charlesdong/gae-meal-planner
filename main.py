@@ -23,6 +23,7 @@ import datetime
 import random
 import hashlib
 import re
+import json
 
 import model
 import helper
@@ -353,9 +354,7 @@ class MealShowDetail(Handler):
         # Jump to the template
         self.render("show_meal_detail.html", user = user, day_date = day_date, meal = meal, backlink = backlink)
 
-
-
-
+   
 # Day Handler Classes
 
 class ShowPlanner(Handler):
@@ -461,35 +460,43 @@ class ShoppingListShow(Handler):
 
 class ShoppingListAdd(Handler):
     
-    def get(self, user, day_date, meal_key_name, item):
+    def post(self, user, day_date):
         
         # is there valid logged in user?
         self.verify_user(user)
         
-        # adding item to shopping-list
-        global shoppinglist_dict
-        sl = shoppinglist_dict.get(user)
-        sl.add_item(item)
+        # converting json list to python list
+        for name in os.environ.keys():
+            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))         
+        #data = json.loads(POST['data'])
+        #py_sl = data['json_shoppinglist']
+        # adding items to shopping-list
+        #global shoppinglist_dict
+        #sl = shoppinglist_dict.get(user)
+        #sl.update_list(py_sl)
+        #sl.save_list()
         
-        #Constructing the Back Link
+        # Constructing the Back Link
 
         year_cw = datehelper.get_year_cw(day_date)
         backlink = "/show/"+user+"/"+str(year_cw[0])+"/"+str(year_cw[1])
 
-        # Getting the right Meal
-        meal = model.Meal.get_by_key_name(meal_key_name)
-        
-        # Jump to the template
-        self.render("show_meal_detail.html", user = user, day_date = day_date, meal = meal, backlink = backlink)
+        # Jump to Meal-Planner 
+        #self.redirect(backlink)
 
 class Debug(Handler):
     
     def get(self):
-        self.write(SESSION_ID)
+        
         global shoppinglist_dict
         for key in shoppinglist_dict:
             self.write(shoppinglist_dict.items())
-        
+            
+
+    
+        for name in os.environ.keys():
+            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))
+            
         
 
 class MainHandler(Handler):
@@ -505,7 +512,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/signup/iwenttherebytrain', SignUp),
                             ('/tasks/cleanup', CleanUp),
                             ('/shoppinglist/([a-fA-F\d]{64})/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShoppingListShow),
-                            ('/shoppinglist/add/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})/(\w+\d{4})/(\w+)', ShoppingListAdd),
+                            ('/shoppinglist/add/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', ShoppingListAdd),
                             ('/add_meal/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/([a-fA-F\d]{64})/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list/([a-fA-F\d]{64})', MealShowList),

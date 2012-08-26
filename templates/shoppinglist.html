@@ -63,7 +63,7 @@
                     </div>
                 <div class="info box">
 	                {% if shoppinglist %}
-		                {% for item in shoppinglist %}
+		                {% for item in shoppinglist.items %}
 		                    <p>{{item}}</p>
 		                {% endfor %}
 	                {% else%}
