@@ -95,9 +95,23 @@ class ShoppingList(object):
         self.items = self.items + shoppinglist
         return self    
     
-    def save_list(self):
-        s = model.ShoppingList(owner = self.owner, items = self.items)
-        s.put()
+    def make_persistent(self, user):
+        #get current logged-in user from database
+        au = model.Authenticated.get_by_key_name(user)
+        
+        # get shoppinglist from database
+        sl_db = model.ShoppingList.all().filter("owner =", au.user)
+        
+        # if shoppinglist for current user in database already exists then merge
+        if sl_db.get():
+            new_items = (sl_db.get().items + self.items)
+            s = model.ShoppingList(owner = self.owner, items = new_items)
+            s.put()
+            sl_db.get().delete()
+        # otherwise create a new one
+        else:
+            s = model.ShoppingList(owner = self.owner, items = self.items)
+            s.put()
         return self
 
         

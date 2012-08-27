@@ -475,12 +475,16 @@ class ShoppingListAdd(Handler):
         # converting json list to python list
                  
         data = json.loads(self.request.POST['data'])
-        print data
+        
         # adding items to shopping-list
         #global shoppinglist_dict
         sl = shoppinglist_dict.get(user)
+        
+        # updating data in object with data from json transmission
         sl.update_list(data)
-        sl.save_list()
+        
+        # save all to database
+        sl.make_persistent(user)
         
         # Constructing the Back Link
 
