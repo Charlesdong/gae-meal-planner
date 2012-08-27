@@ -92,7 +92,7 @@ class ShoppingList(object):
         return self.items
     
     def update_list(self, shoppinglist):
-        self.list = self.list + shoppinglist
+        self.items = self.items + shoppinglist
         return self    
     
     def save_list(self):

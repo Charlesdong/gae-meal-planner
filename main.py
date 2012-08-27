@@ -449,14 +449,21 @@ class EntryRemove(Handler):
 class ShoppingListShow(Handler):
     
     def get(self, user, year, cw):
-        global shoppinglist_dict
-        sl = shoppinglist_dict.get(user)
-        sl.get_list()
+        
+        # is there valid logged in user?
+        self.verify_user(user)
+        
+        #get current logged-in user from database
+        au = model.Authenticated.get_by_key_name(user)
+        
+        # get shoppinglist from database
+        sl = model.ShoppingList.all().filter("owner =", au.user)
+        
         year = year
         cw = cw
-        
+      
         backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
-        self.render("shoppinglist.html", user = user, backlink = backlink, shoppinglist = sl)
+        self.render("shoppinglist.html", user = user, backlink = backlink, sl = sl.get())
 
 class ShoppingListAdd(Handler):
     
@@ -466,15 +473,14 @@ class ShoppingListAdd(Handler):
         self.verify_user(user)
         
         # converting json list to python list
-        for name in os.environ.keys():
-            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))         
-        #data = json.loads(POST['data'])
-        #py_sl = data['json_shoppinglist']
+                 
+        data = json.loads(self.request.POST['data'])
+        print data
         # adding items to shopping-list
         #global shoppinglist_dict
-        #sl = shoppinglist_dict.get(user)
-        #sl.update_list(py_sl)
-        #sl.save_list()
+        sl = shoppinglist_dict.get(user)
+        sl.update_list(data)
+        sl.save_list()
         
         # Constructing the Back Link
 
@@ -482,7 +488,7 @@ class ShoppingListAdd(Handler):
         backlink = "/show/"+user+"/"+str(year_cw[0])+"/"+str(year_cw[1])
 
         # Jump to Meal-Planner 
-        #self.redirect(backlink)
+        self.redirect(backlink)
 
 class Debug(Handler):
     
@@ -491,12 +497,6 @@ class Debug(Handler):
         global shoppinglist_dict
         for key in shoppinglist_dict:
             self.write(shoppinglist_dict.items())
-            
-
-    
-        for name in os.environ.keys():
-            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))
-            
         
 
 class MainHandler(Handler):

@@ -62,11 +62,11 @@
 				    <div class="ym-box">	
                     </div>
                 <div class="info box">
-	                {% if shoppinglist %}
-		                {% for item in shoppinglist.items %}
+	                {% if sl %}
+		                {% for item in sl.items %}
 		                    <p>{{item}}</p>
 		                {% endfor %}
-	                {% else%}
+	                {% else %}
 	                    <p>Noch keine Elemente vorhanden!</p>
 	                {% endif %}
                 </div>

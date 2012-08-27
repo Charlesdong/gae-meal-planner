@@ -36,6 +36,6 @@ class Authenticated(db.Model):
     logged_in_at = db.DateTimeProperty(auto_now = True)
     
 class ShoppingList(db.Model):
-    owner = db.ReferenceProperty(User)
+    owner = db.StringProperty()
     items = db.ListProperty(unicode)
     
