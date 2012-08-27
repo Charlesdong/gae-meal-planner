@@ -27,8 +27,10 @@
         
 	$(document).ready(function() {
 		   $("input[type*='submit']").click(function() {
-			   var json_shoppinglist = JSON.stringify(shoppinglist)
-	            $.post("/shoppinglist/add/{{user}}/{{day_date}}", {'data': json_shoppinglist});
+			   var json_shoppinglist = JSON.stringify(shoppinglist);
+			   $("#shopping_list").empty();
+	           $.post("/shoppinglist/add/{{user}}/{{day_date}}", {'data': json_shoppinglist}, function(){alert("Daten dem Einkaufszettel hinzugefügt!")});
+			   
 		   });
 		 });
 	
@@ -100,7 +102,7 @@
 		                <p><b>Zutaten:</b></br>{% for item in meal.ingredients %} <div id="sl_{{item}}" onClick="add_item(this.id);" >{{item}}</div> {% endfor %}</p>
 		                <p><b>Referenz:</b> {{meal.reference}}</p>
 		                </div>
-		                <p><a href="{{backlink}}">Zurück</a></p>
+		                
 		            </div>
                 </div>
 				<div class="ym-g50 ym-gr linearize-level-2">
@@ -108,11 +110,12 @@
 						<h2>Einkaufszettel</h2>
 		                <div id="shopping_list"></div>
 		                
-		                <input type="submit"> 
+		                <input type="submit" value="Hinzufügen!"> 
 		                </form>
                     </div>
                     
-                </div> 
+                </div>
+                <p><a href="{{backlink}}">Zurück</a></p> 
             </section> 
 			
 		</div>

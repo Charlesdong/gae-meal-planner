@@ -81,16 +81,7 @@ class ShoppingList(object):
             print "Entfernen des Elementes hat nicht funktioniert."
         return self
     
-    def clean_list(self):
-        self.items = []
-        return self
-    
-    def remove_doublets(self):
-        pass
-    
-    def get_list(self):
-        return self.items
-    
+       
     def update_list(self, shoppinglist):
         self.items = self.items + shoppinglist
         return self    

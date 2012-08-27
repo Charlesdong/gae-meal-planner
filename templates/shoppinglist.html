@@ -20,7 +20,12 @@
 	<![endif]-->
 	
 	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
-	
+	<script type="text/javascript" src="/static/lib/jquery-1.7.1.min.js"></script>
+    
+    <script type="text/javascript">
+    
+    
+    </script>
 	
 </head>
 <body>
@@ -61,15 +66,18 @@
 				<div class="ym-g50 ym-gl linearize-level-1">
 				    <div class="ym-box">	
                     </div>
-                <div class="info box">
+                
 	                {% if sl %}
+	                <table>
+	                   <th>Zutat</th><th>Gericht</th><th>Aktion</th>
 		                {% for item in sl.items %}
-		                    <p>{{item}}</p>
+		                    <tr><td>{{item}}</td><td>Gerichtlink?</td><td>[-]</td></tr>
 		                {% endfor %}
+		            </table>
 	                {% else %}
 	                    <p>Noch keine Elemente vorhanden!</p>
 	                {% endif %}
-                </div>
+                
                 
                 <p><a href="{{backlink}}">Zurück</a></p>
                 </div>
