@@ -454,8 +454,11 @@ class ShoppingListShow(Handler):
         self.verify_user(user)
         
         #get current logged-in user from database
-        au = model.Authenticated.get_by_key_name(user)
-        
+        try:
+            au = model.Authenticated.get_by_key_name(user)
+        except:
+            self.redirect("/")
+            
         # get shoppinglist from database
         sl = model.ShoppingList.all().filter("owner =", au.user)
         
@@ -493,6 +496,14 @@ class ShoppingListAdd(Handler):
 
         # Jump to Meal-Planner 
         self.redirect(backlink)
+
+class ShoppingListDelItem(Handler):
+    
+    def post(self, user, item):
+        
+        # is there valid logged in user?
+        self.verify_user(user)
+
 
 class Debug(Handler):
     

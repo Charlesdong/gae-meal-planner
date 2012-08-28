@@ -42,6 +42,7 @@
             shoppinglist.push(item);
             
             var divTag = document.createElement("div");
+            divTag.className = "sl_items_added";
             divTag.id = item;
             divTag.innerHTML = item;
             divTag.setAttribute("onClick","del_item(this.id);")
@@ -94,28 +95,29 @@
 		<div class="ym-wbox">
 		
 			<section class="ym-grid">
-				<div class="ym-g50 ym-gl linearize-level-1">
+				<div class="ym-g40 ym-gl linearize-level-1">
 				    <div class="ym-box">
 				        <h2>{{meal.name}}</h2>  	
 		                <div class="info box">    
 		                <p><b>Kategorie:</b> {{meal.category}}</p>
-		                <p><b>Zutaten:</b></br>{% for item in meal.ingredients %} <div id="sl_{{item}}" onClick="add_item(this.id);" >{{item}}</div> {% endfor %}</p>
+		                <p><b>Zutaten:</b></br>{% for item in meal.ingredients %} <div class="sl_items" id="sl_{{item}}" onClick="add_item(this.id);" >{{item}}</div> {% endfor %}</p>
 		                <p><b>Referenz:</b> {{meal.reference}}</p>
 		                </div>
 		                
 		            </div>
                 </div>
-				<div class="ym-g50 ym-gr linearize-level-2">
+                <div class="ym-g10 ym-gr"></div>
+				<div class="ym-g40 ym-gr linearize-level-2">
                     <div class="ym-box">
 						<h2>Einkaufszettel</h2>
 		                <div id="shopping_list"></div>
 		                
-		                <input type="submit" value="Hinzufügen!"> 
+		                <input type="submit" value="Einkaufszettel speichern!"> 
 		                </form>
                     </div>
-                    
+                    <p><a href="{{backlink}}">Zurück</a></p> 
                 </div>
-                <p><a href="{{backlink}}">Zurück</a></p> 
+                
             </section> 
 			
 		</div>

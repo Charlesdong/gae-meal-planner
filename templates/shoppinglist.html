@@ -69,9 +69,9 @@
                 
 	                {% if sl %}
 	                <table>
-	                   <th>Zutat</th><th>Gericht</th><th>Aktion</th>
+	                   <th>Zutat</th><th>Notiz</th><th>Aktion</th>
 		                {% for item in sl.items %}
-		                    <tr><td>{{item}}</td><td>Gerichtlink?</td><td>[-]</td></tr>
+		                    <tr><td>{{item}}</td><td>Notiz hinzufügen</td><td><a href="shoppinglist/del/item/{{user}}/{{item}}" title="Element entfernen">[-]</a></td></tr>
 		                {% endfor %}
 		            </table>
 	                {% else %}

@@ -30,6 +30,37 @@
 
 /* eigene CSS Anweisungen, �berschreiben Vorgaben */
 
+    .sl_items {
+    background: grey;
+    color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 15px;
+    padding: 2px;
+    margin: 2px;
+    text-align: center;
+    }
+    
+    .sl_items:hover{
+    background: green;
+    color: white;
+    }
+    
+    .sl_items_added {
+    background: grey;
+    color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 15px;
+    padding: 2px;
+    margin: 2px;
+    text-align: center;
+    }
+
+    .sl_items_added:hover{
+    background: red;
+    color: white;
+    }
 /* Basic Element Styling */
 	header {
 		background: #444;
