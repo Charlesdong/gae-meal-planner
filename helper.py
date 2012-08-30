@@ -94,9 +94,10 @@ class ShoppingList(object):
         return self    
     
     def make_persistent(self, user):
+        
         #get current logged-in user from database
         au = model.Authenticated.get_by_key_name(user)
-        
+                
         # get shoppinglist from database
         sl_db = model.ShoppingList.all().filter("owner =", au.user)
         

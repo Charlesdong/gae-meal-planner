@@ -462,11 +462,15 @@ class ShoppingListShow(Handler):
         # get shoppinglist from database
         sl = model.ShoppingList.all().filter("owner =", au.user)
         
+        # generate json object
+        sl = json.dumps(sl.get().items)
+      
+        # assembling the backlink url
         year = year
         cw = cw
-      
         backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
-        self.render("shoppinglist.html", user = user, backlink = backlink, sl = sl.get())
+        
+        self.render("shoppinglist.html", user = user, backlink = backlink, sl = sl)
 
 class ShoppingListAdd(Handler):
     

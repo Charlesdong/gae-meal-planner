@@ -21,12 +21,25 @@
 	
 	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
 	<script type="text/javascript" src="/static/lib/jquery-1.7.1.min.js"></script>
-    
     <script type="text/javascript">
     
     
+    var sl={{sl|safe}}
+    
+    
+    
+    function test(){
+    	alert("Hallo Test");
+    }   
+    
+    function iterate(){
+    	for (var i = 0; i < sl.length; i++){
+    		alert(sl[i]);
+    	}
+    };
+   
     </script>
-	
+ 
 </head>
 <body>
 
@@ -68,13 +81,22 @@
                     </div>
                 
 	                {% if sl %}
-	                <table>
-	                   <th>Zutat</th><th>Notiz</th><th>Aktion</th>
-		                {% for item in sl.items %}
-		                    <tr><td>{{item}}</td><td>Notiz hinzufügen</td><td><a href="shoppinglist/del/item/{{user}}/{{item}}" title="Element entfernen">[-]</a></td></tr>
-		                {% endfor %}
-		            </table>
-	                {% else %}
+	                {{sl}}
+	                <input type="submit" onClick="iterate();">
+								<table>
+									<th>Zutat</th>
+									<th>Notiz</th>
+									<th>Aktion</th>
+									<tr>
+										<td><script>iterate();</script></td>
+										<td></td>
+										<td><a href="shoppinglist/del/item/{{user}}/{{item}}"
+											title="Element entfernen">[-]</a></td>
+									</tr>
+									
+								</table>
+
+								{% else %}
 	                    <p>Noch keine Elemente vorhanden!</p>
 	                {% endif %}
                 

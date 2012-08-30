@@ -38,4 +38,5 @@ class Authenticated(db.Model):
 class ShoppingList(db.Model):
     owner = db.StringProperty()
     items = db.ListProperty(unicode)
+    note = db.StringProperty(multiline = True)
     
