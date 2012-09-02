@@ -75,18 +75,13 @@ class ShoppingList(object):
         return self
     
     def remove_item(self, user, item):
-        
-        #get current logged-in user from database
-        au = model.Authenticated.get_by_key_name(user)
-        
-        # get shoppinglist from database
-        sl_db = model.ShoppingList.all().filter("owner =", au.user)
-                
+                        
         try:
-            sl_db.get().items.remove(item)
             self.items.remove(item)
         except ValueError():
             print "Entfernen des Elementes hat nicht funktioniert."
+        if not self.items:
+            self.items = []
         return self
     
           

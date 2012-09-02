@@ -464,7 +464,7 @@ class ShoppingListShow(Handler):
        
         sl = model.ShoppingList.all().filter("owner =", au.user)
         
-        if not sl.get():
+        if not sl.get() or not sl.get().items:
             backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
             self.render("shoppinglist.html", user = user, backlink = backlink)
         else:

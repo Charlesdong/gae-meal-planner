@@ -61,6 +61,12 @@
     background: red;
     color: white;
     }
+    
+    .shopping_list {
+    background: green;
+    padding-top: 5em;
+    width: 50%;
+    }
 /* Basic Element Styling */
 	header {
 		background: #444;

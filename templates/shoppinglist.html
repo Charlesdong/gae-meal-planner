@@ -103,27 +103,15 @@
 			<section class="ym-grid">
 				<div class="ym-g50 ym-gl linearize-level-1">
 				    <div class="ym-box">	
-                    </div>
+                    
                 
 	                {% if sl %}
-	                	                
-								<table>
-									<th>Zutat</th>
-									<th>Notiz</th>
-									<th>Aktion</th>
-									<tr>
-										<td><div id="shopping_list"></div></td>
-										<td></td>
-										<td><a href="shoppinglist/del/item/{{user}}/{{item}}"
-											title="Element entfernen">[-]</a></td>
-									</tr>
-									
-								</table>
-
-								{% else %}
+	                	<div id="shopping_list"></div>
+					{% else %}
 	                    <p>Noch keine Elemente vorhanden!</p>
 	                {% endif %}
-                
+                    
+                    </div>
                 
                 <p><a href="{{backlink}}">Zurück</a></p>
                 </div>
