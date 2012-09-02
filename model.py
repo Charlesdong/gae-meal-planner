@@ -21,7 +21,7 @@ class Day(db.Model):
     date = db.DateProperty()
     meal_name = db.StringProperty()
     meal_key_name = db.StringProperty()
-    owner = db.ReferenceProperty(User)
+    owner = db.StringProperty(User)
 
 class Meal(db.Model):
     name = db.StringProperty(required = True)
@@ -29,7 +29,7 @@ class Meal(db.Model):
     ingredients = db.ListProperty(unicode)
     reference = db.StringProperty()
     day = db.ListProperty(db.Key)
-    owner = db.ReferenceProperty(User)
+    owner = db.StringProperty(User)
 
 class Authenticated(db.Model):
     user = db.StringProperty()

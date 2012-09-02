@@ -41,14 +41,21 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
 
 # Constructs the calendar week table and populates it with model.Day objects
-def construct_table(year, cw):
+def construct_table(user, year, cw):
     w = datehelper.get_week(year, cw)
     table = []    
     for data in w:
         day_date = datehelper.get_date(year, data)
-        result = model.Day.all().filter('date =', day_date)
+                
+        #get current logged-in user from database
+        au = model.Authenticated.get_by_key_name(user)
+        
+        # look for timetable of current logged-in user
+        result = model.db.GqlQuery("SELECT * FROM Day WHERE date = :daydate AND owner = :owner", daydate = day_date, owner = au.user)
+        
+        # if it's not there create it
         if not result.get():
-            d = model.Day(name = datehelper.get_day_name(str(day_date)), date = day_date)
+            d = model.Day(name = datehelper.get_day_name(str(day_date)), date = day_date, owner = au.user )
             d.put()
             table.append(d)
         else:
@@ -86,19 +93,19 @@ class Handler(webapp2.RequestHandler):
 # verify whether user is logged in or not and if, since when
     
     def verify_user(self, user):
-        user = model.Authenticated.get_by_key_name(user)
-        if not user:
+        au = model.Authenticated.get_by_key_name(user)
+        if not au:
             self.redirect("/login")
         else:
-            diff = datetime.datetime.now() - user.logged_in_at 
+            diff = datetime.datetime.now() - au.logged_in_at 
             if diff.seconds > 1800:
                 print diff
-                user.delete()
+                au.delete()
                 error = u"Ihre Benutzersitzung ist abgelaufen. Sie werden zum Login weitergeleitet..."
                 self.render("error.html", error = error)
                
             else:
-                return self               
+                return au.user              
            
 class Error(Handler):  
     
@@ -240,7 +247,7 @@ class MealAdd(Handler):
     def post(self, user, day_date=""):
         
         # is there valid logged in user?
-        self.verify_user(user)
+        au = self.verify_user(user)
             
         key_name=""
         for i in range(1,10):
@@ -254,7 +261,7 @@ class MealAdd(Handler):
         day_date = self.request.get("day_date")
 
         if name:
-            m = model.Meal(key_name = key_name, name = name, category = category, ingredients = ingredients, reference = reference)
+            m = model.Meal(key_name = key_name, name = name, category = category, ingredients = ingredients, reference = reference, owner = au)
             m.put()
             # go to where you came from
 
@@ -289,11 +296,11 @@ class MealDel(Handler):
     def post(self, user, key_name="", day_date=""):
         
         # is there valid logged in user?
-        self.verify_user(user)
+        au = self.verify_user(user)
         
         m = model.Meal.get_by_key_name(key_name)
         
-        days_to_cleanup = model.db.GqlQuery("SELECT * FROM Day WHERE meal_key_name = :meal_key_name", meal_key_name = m.key().name())
+        days_to_cleanup = model.db.GqlQuery("SELECT * FROM Day WHERE meal_key_name = :meal_key_name AND owner = :owner", meal_key_name = m.key().name(), owner = au)
 
         for day in days_to_cleanup:
             day.meal_name = ""
@@ -310,28 +317,30 @@ class MealShowList(Handler):
     def get(self, user, day_date=datehelper.get_actual_day, sort_criteria = "", meal_categories = []):
         
         # is there valid logged in user?
-        self.verify_user(user)
+        au = self.verify_user(user)
         
+        # if there is a sorting selection, just show sorted meals
         if sort_criteria:
-            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria) 
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC AND owner = :owner", sort_criteria, owner = au) 
             self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
+        # otherwise show the whole list belonging to the user
         else:
-            meal_list = model.Meal.all()
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE owner = :owner", owner = au)
             self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories) 
 
 
     def post(self, user, day_date="", sort_criteria=""):
         
         # is there valid logged in user?
-        self.verify_user(user)
+        au = self.verify_user(user)
         
         day_date = self.request.get("day_date")
         sort_criteria = self.request.get("sort_criteria")
         
         if sort_criteria == "all":
-            meal_list = model.db.GqlQuery("SELECT * FROM Meal")
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE owner = :owner", owner = au)
         else:
-            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC", sort_criteria = self.request.get("sort_criteria"))
+            meal_list = model.db.GqlQuery("SELECT * FROM Meal WHERE category = :sort_criteria ORDER BY category DESC WHERE owner = :owner", owner = au, sort_criteria = self.request.get("sort_criteria"))
         
         self.render("show_meal_list.html", user = user, meal_list = meal_list, day_date = day_date, meal_categories = model.meal_categories, sort_criteria = sort_criteria)
 
@@ -382,9 +391,11 @@ class ShowPlanner(Handler):
             forward_year = year
 
         nav = (year, cw, back_year, back_cw, forward_year, forward_cw, user)
-        tab = construct_table(year, cw)
+        tab = construct_table(user, year, cw)
         for day in tab:
-            m = model.Meal.all().filter('day =', day.key())
+            #m = model.Meal.all().filter('day =', day.key())
+            
+            m = model.db.GqlQuery("SELECT * FROM Meal WHERE day = :daykey", daykey = day.key())
             if m.get():
                 day.meal_name = m.get().name
                 day.meal_key_name = m.get().key().name()
@@ -397,22 +408,25 @@ class EntryCommit(Handler):
     def get(self, user, day_date, meal_key_name):
         
         # is there valid logged in user?
-        self.verify_user(user)
+        au = self.verify_user(user)
         
         day_date = datehelper.gen_date_obj(day_date)
-              
-        d = model.Day.all().filter('date =', day_date)
+        
+        d = model.db.GqlQuery("SELECT * FROM Day WHERE date = :daydate AND owner = :owner", daydate = day_date, owner = au)      
+        #d = model.Day.all().filter('date =', day_date)
         m = model.Meal.get_by_key_name(meal_key_name)
         
         meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference)
+        
         # copy values from queried Object to new Object
         meal.day = m.day
+        
         # Value not already in ListProperty then append it
         if d.get().key() not in m.day:
             meal.day.append(d.get().key())
         meal.put()
+        
         # hier Parameter für korrekten Rücksprung errechnen (Jahr//KW)
-
         year_cw = datehelper.get_year_cw(str(day_date))
 
         self.redirect("/show/"+user+"/"+str(year_cw[0])+"/"+str(year_cw[1]))
@@ -422,18 +436,19 @@ class EntryRemove(Handler):
     def get(self, user, day_date, meal_key_name):
         
         # is there valid logged in user?
-        self.verify_user(user)
+        au = self.verify_user(user)
         
         # generates datetime object
         day_date = datehelper.gen_date_obj(day_date)
         
         # lookup db for correct day and meal
-        d = model.Day.all().filter('date =', day_date)
+        d = model.db.GqlQuery("SELECT * FROM Day WHERE date = :daydate AND owner = :owner", daydate = day_date, owner = au)
+        #d = model.Day.all().filter('date =', day_date)
         m = model.Meal.get_by_key_name(meal_key_name)
         
         meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference)
         # erases meal from day object
-        day = model.Day(name = d.get().name, date = d.get().date, meal_name = None, meal_key_name = None) 
+        day = model.Day(name = d.get().name, date = d.get().date, meal_name = None, meal_key_name = None, owner = d.get().owner) 
         meal.day = m.day
         meal.day.remove(d.get().key())
         d.get().delete()
