@@ -259,12 +259,11 @@ class MealAdd(Handler):
         ingredients = self.parse_ingredients(self.request.get("ingredients"))
         reference = self.request.get("reference")
         day_date = self.request.get("day_date")
-
+      
         if name:
             m = model.Meal(key_name = key_name, name = name, category = category, ingredients = ingredients, reference = reference, owner = au)
             m.put()
             # go to where you came from
-
             self.redirect("/show_meal_list/"+user+"/"+day_date)
         else:
             error = "Bitte Namen angeben!"
@@ -416,7 +415,7 @@ class EntryCommit(Handler):
         #d = model.Day.all().filter('date =', day_date)
         m = model.Meal.get_by_key_name(meal_key_name)
         
-        meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference)
+        meal = model.Meal(key_name=m.key().name(),name=m.name, category=m.category, ingredients = m.ingredients, reference = m.reference, owner = au)
         
         # copy values from queried Object to new Object
         meal.day = m.day
@@ -470,22 +469,25 @@ class ShoppingListShow(Handler):
         
         #get current logged-in user from database
         
-        au = model.Authenticated.get_by_key_name(user)
+        #au = model.Authenticated.get_by_key_name(user)
         
-        if not au:
-            self.redirect("/")
+        #if not au:
+        #   self.redirect("/")
             
         # get shoppinglist from database
        
-        sl = model.ShoppingList.all().filter("owner =", au.user)
+        #sl = model.ShoppingList.all().filter("owner =", au.user)
         
-        if not sl.get() or not sl.get().items:
+        #global shoppinglist_dict
+        sl = shoppinglist_dict.get(user)
+        
+        if not sl or not sl.items:
             backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
             self.render("shoppinglist.html", user = user, backlink = backlink)
         else:
                       
             # generate json object
-            sl = json.dumps(sl.get().items)
+            sl = json.dumps(sl.items)
           
             # assembling the backlink url
             year = year

@@ -67,7 +67,13 @@ class ShoppingList(object):
     
     def __init__(self, owner):
         self.owner = owner
-        self.items = []
+        
+        try:
+            # get shoppinglist from database
+            sl_db = model.ShoppingList.all().filter("owner =", owner)
+            self.items = sl_db.get().items
+        except:
+            self.items = []
         
     
     def add_item(self, item):
@@ -75,17 +81,16 @@ class ShoppingList(object):
         return self
     
     def remove_item(self, user, item):
-                        
+       
         try:
             self.items.remove(item)
-        except ValueError():
-            print "Entfernen des Elementes hat nicht funktioniert."
-        if not self.items:
-            self.items = []
+        except ValueError:
+            print "Konnte Element nicht entfernen!"
         return self
     
           
     def update_list(self, shoppinglist):
+        
         self.items = self.items + shoppinglist
         return self    
     
