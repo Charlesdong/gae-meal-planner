@@ -454,23 +454,30 @@ class ShoppingListShow(Handler):
         self.verify_user(user)
         
         #get current logged-in user from database
-        try:
-            au = model.Authenticated.get_by_key_name(user)
-        except:
+        
+        au = model.Authenticated.get_by_key_name(user)
+        
+        if not au:
             self.redirect("/")
             
         # get shoppinglist from database
+       
         sl = model.ShoppingList.all().filter("owner =", au.user)
         
-        # generate json object
-        sl = json.dumps(sl.get().items)
-      
-        # assembling the backlink url
-        year = year
-        cw = cw
-        backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
-        
-        self.render("shoppinglist.html", user = user, backlink = backlink, sl = sl)
+        if not sl.get():
+            backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
+            self.render("shoppinglist.html", user = user, backlink = backlink)
+        else:
+                      
+            # generate json object
+            sl = json.dumps(sl.get().items)
+          
+            # assembling the backlink url
+            year = year
+            cw = cw
+            backlink = "/show/"+user+"/"+str(year)+"/"+str(cw)
+            
+            self.render("shoppinglist.html", user = user, backlink = backlink, sl = sl)
 
 class ShoppingListAdd(Handler):
     
@@ -501,12 +508,28 @@ class ShoppingListAdd(Handler):
         # Jump to Meal-Planner 
         self.redirect(backlink)
 
-class ShoppingListDelItem(Handler):
+class ShoppingListDel(Handler):
     
-    def post(self, user, item):
+    def post(self, user):
         
         # is there valid logged in user?
         self.verify_user(user)
+        
+        # converting json string to python string
+                 
+        data = json.loads(self.request.POST['data'])
+        
+        # adding items to shopping-list
+        #global shoppinglist_dict
+        sl = shoppinglist_dict.get(user)
+        
+        # updating data in object with data from json transmission
+        sl.remove_item(user,data)
+        
+        # save all to database
+        sl.make_persistent(user)
+        
+        
 
 
 class Debug(Handler):
@@ -532,6 +555,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                             ('/tasks/cleanup', CleanUp),
                             ('/shoppinglist/([a-fA-F\d]{64})/(2\d{3})/([1-5]{1}[0-9]{1}|[1-9])', ShoppingListShow),
                             ('/shoppinglist/add/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', ShoppingListAdd),
+                            ('/shoppinglist/del/([a-fA-F\d]{64})', ShoppingListDel),
                             ('/add_meal/([a-fA-F\d]{64})/(2\d{3}-\d{2}-\d{2})', MealAdd),
                             ('/del_meal/([a-fA-F\d]{64})/(\w+\d{4})/(2\d{3}-\d{2}-\d{2})', MealDel),
                             ('/show_meal_list/([a-fA-F\d]{64})', MealShowList),

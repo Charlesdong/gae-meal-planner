@@ -84,6 +84,7 @@ class ShoppingList(object):
                 
         try:
             sl_db.get().items.remove(item)
+            self.items.remove(item)
         except ValueError():
             print "Entfernen des Elementes hat nicht funktioniert."
         return self
@@ -103,8 +104,8 @@ class ShoppingList(object):
         
         # if shoppinglist for current user in database already exists then merge
         if sl_db.get():
-            new_items = (sl_db.get().items + self.items)
-            s = model.ShoppingList(owner = self.owner, items = new_items)
+            
+            s = model.ShoppingList(owner = self.owner, items = self.items)
             s.put()
             sl_db.get().delete()
         # otherwise create a new one

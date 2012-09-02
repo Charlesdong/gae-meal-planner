@@ -22,22 +22,47 @@
 	<link rel="stylesheet" href="/static/yaml/add-ons/accessible-tabs/tabs.css" type="text/css"/>
 	<script type="text/javascript" src="/static/lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript">
-    
+
+
     
     var sl={{sl|safe}}
-    
-    
-    
-    function test(){
-    	alert("Hallo Test");
-    }   
+    var dellink = "/shoppinglist/del/{{user}}"
     
     function iterate(){
-    	for (var i = 0; i < sl.length; i++){
-    		alert(sl[i]);
-    	}
-    };
+        for (var i = 0; i < sl.length; i++){
+            
+            var divTag = document.createElement("div");
+            divTag.className = "sl_items_added";
+            divTag.id = i;
+            divTag.innerHTML = sl[i];
+            divTag.setAttribute("onClick","del_item(this.id);")
+            document.getElementById("shopping_list").appendChild(divTag);
+        }
+    }
+           
+    function remove_item(item){
+        item = JSON.stringify(item);
+        $.post(dellink, {'data': item}, function(){console.log("Element "+item+" entfernt!")});
+    }
+                  
+    function del_item(obj){
+        
+        var item = document.getElementById(obj);
+        remove_item(document.getElementById(obj).innerHTML);
+        var idx = sl.indexOf(item); // Find the index
+        if(idx!=-1) sl.splice(idx, 1); // Remove it if really found!
+        
+        var parentElement = document.getElementById("shopping_list");
+        parentElement.removeChild(document.getElementById(obj));
+        
+    }
+    
+    $(document).ready(function() {
    
+    	iterate();
+    	
+    });
+    
     </script>
  
 </head>
@@ -81,14 +106,13 @@
                     </div>
                 
 	                {% if sl %}
-	                {{sl}}
-	                <input type="submit" onClick="iterate();">
+	                	                
 								<table>
 									<th>Zutat</th>
 									<th>Notiz</th>
 									<th>Aktion</th>
 									<tr>
-										<td><script>iterate();</script></td>
+										<td><div id="shopping_list"></div></td>
 										<td></td>
 										<td><a href="shoppinglist/del/item/{{user}}/{{item}}"
 											title="Element entfernen">[-]</a></td>
